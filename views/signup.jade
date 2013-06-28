@@ -23,8 +23,13 @@ block script
   |     email:$('#email').val(),
   |   },
   |   success: function(res){
-  |     if (res.error) $('.response').html('Signup failed ' + res.message);
-  |     else
+  |     if (res.error) {
+  |       var err = ""
+  |       for(var i in res.list) {
+  |         err += "<li>" + res.list[i].message + "</li>";
+  |       }
+  |       $('.response').html("<ul>" + err + "</ul>");
+  |     } else
   |       $('.response').html('Successfully signedup: ' + res.token);
   |   },
   |   error: function(){ $('.response').html('Signup failed'); }

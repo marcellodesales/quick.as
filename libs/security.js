@@ -19,6 +19,11 @@ exports.comparePassword = function(password, userPassword, callback) {
    });
 };
 
+exports.validateEmail = function(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(email);
+};
+
 exports.validateTokenUser = function(email, callback) {
   var isValid = false;
   var client = new pg.Client(postgres);

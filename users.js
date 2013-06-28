@@ -71,6 +71,20 @@ exports.signup = function(req, res) {
 	var lastname = req.headers.lastname;
 	var errors = [];
 
+	var checkFields = function(fn) {
+		if (firstname === "")
+			errors.push( { message: "Firstname is required" } );
+		if (lastname === "")
+			errors.push( { message: "Lastname is required" } );
+		if (username === "")
+			errors.push( { message: "Username is required" } );
+		if (!security.validateEmail(email))
+			errors.push( { message: "A valid Email is required" } );
+		if (password === "")
+			errors.push( { message: "Password is required" } );
+		return fn && fn(null, true);
+	};
+
 	var checkEmail = function(fn) {
 		client.query("SELECT * FROM users WHERE email = $1", [email])
 		.on('row', function(r) {
@@ -91,24 +105,18 @@ exports.signup = function(req, res) {
 		});
 	};
 
-	checkUsername(function (err, result) {
-		checkEmail(function (err, result) {
-			finishRequest(result);
+	checkFields(function (err, result) {
+		checkUsername(function (err, result) {
+			checkEmail(function (err, result) {
+				finishRequest(result);
+			});
 		});
 	});
 
 	var finishRequest = function(result) {
 		if (errors.length > 0) {
-
-			var str = "";
-
-			for(var m in errors)
-			{
-				str += " " + errors[m].message;
-			}
 			client.end();
-
-			res.json({ error: true, message: str });
+			res.json({ error: true, list: errors });
 		}else{
 			security.cryptPassword(password,function(err,pwd) {
 				var query = client.query("INSERT INTO users(created,firstname,lastname,email,username,password) values($1,$2,$3,$4,$5,$6)", [new Date(), firstname, lastname, email, username, pwd]);
