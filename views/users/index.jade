@@ -1,0 +1,21 @@
+extend layout
+block content
+  ul
+    li 
+      a(href='/v1/users/setup') Destroy / Create table
+      p Drop and Create the users table
+    li
+      a(href='/v1/users/signup') Signup
+      p Signup expects POST: firstname, lastname, username, email, password - send through the header, responds with JSON (token) or 401
+    li
+      a(href='/v1/users/form/signup') Signup Form
+      p A simple form to test with
+    li
+      a(href='/v1/users/signin') Signin
+      p Signin expects POST: username, password - send through header, responds with JSON (token &amp; email) or 401
+    li
+      a(href='/v1/users/form/signin') Signin Form
+      p A simple form to test with
+    li
+      a(href='/v1/users/list') Users
+      p Send the token through the header to access, responds with JSON (list of all users)

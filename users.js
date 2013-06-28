@@ -175,19 +175,19 @@ exports.signin = function(req, res) {
 };
 
 exports.signinForm = function(req, res) {
-	res.render('signin', {
+	res.render('users/signin', {
 		title: 'Signin'
 	});
 };
 
 exports.signupForm = function(req, res) {
-	res.render('signup', {
+	res.render('users/signup', {
 		title: 'Signup'
 	});
 };
 
 exports.index = function(req, res) {
-	res.render('index', {
+	res.render('users/index', {
 		title: 'API'
 	});
 };

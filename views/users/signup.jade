@@ -1,0 +1,38 @@
+extend layout
+block content
+  p
+    input(id='firstname', type='text', placeholder='firstname')
+    input(id='lastname', type='text', placeholder='lastname')
+    input(id='email', type='text', placeholder='email')
+    input(id='username', type='text', placeholder='username')
+    input(id='password', type='password', placeholder='password')
+    input(id='button', type='button', value='submit')
+  p.response
+block script
+  | $('#button').on('click', function() {
+  | $.ajax({
+  |   type: "POST",
+  |   dataType: "json",
+  |   timeout: 1000,
+  |   url: "/v1/signup",
+  |   headers: {
+  |     username:$('#username').val(), 
+  |     password:$('#password').val(),
+  |     firstname:$('#firstname').val(),
+  |     lastname:$('#lastname').val(),
+  |     email:$('#email').val(),
+  |   },
+  |   success: function(res){
+  |     if (res.error) {
+  |       var err = ""
+  |       for(var i in res.list) {
+  |         err += "<li>" + res.list[i].message + "</li>";
+  |       }
+  |       $('.response').html("<ul>" + err + "</ul>");
+  |     } else
+  |       $('.response').html('Successfully signedup: ' + res.token);
+  |   },
+  |   error: function(){ $('.response').html('Signup failed'); }
+  | });
+  | return false;
+  | });
