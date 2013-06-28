@@ -6,13 +6,13 @@ block content
       p Drop and Create the users table
     li
       a(href='/v1/signup') Signup
-      p Signup expects: firstname, lastname, username, email, password - send through the header, responds with JSON (token) or 401
+      p Signup expects POST: firstname, lastname, username, email, password - send through the header, responds with JSON (token) or 401
     li
       a(href='/v1/form/signup') Signup Form
       p A simple form to test with
     li
       a(href='/v1/signin') Signin
-      p Signin expects: username, password - send through header, responds with JSON (token &amp; email) or 401
+      p Signin expects POST: username, password - send through header, responds with JSON (token &amp; email) or 401
     li
       a(href='/v1/form/signin') Signin Form (for testing)
       p A simple form to test with
