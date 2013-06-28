@@ -12,7 +12,7 @@ exports.setup = function(req, res) {
 	if(client.connection != null)
 		client.connect();
 
-	//client.query("DROP TABLE users");
+	client.query("DROP TABLE users");
 	var query = client.query("CREATE TABLE users (id SERIAL, created TIMESTAMP, firstname VARCHAR(35), lastname VARCHAR(35), email VARCHAR(200), username VARCHAR(15), password VARCHAR(200))");
 
 	query.on('end', function() {

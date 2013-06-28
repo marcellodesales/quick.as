@@ -2,14 +2,20 @@ extend layout
 block content
   ul
     li 
-      a(href='/v1/setup') Destroy / Create
+      a(href='/v1/setup') Destroy / Create table
+      p Drop and Create the users table
     li
       a(href='/v1/signup') Signup
+      p Signup expects: firstname, lastname, username, email, password - send through the header, responds with JSON (token) or 401
     li
-      a(href='/v1/form/signup') Signup Form (for testing)
+      a(href='/v1/form/signup') Signup Form
+      p A simple form to test with
     li
       a(href='/v1/signin') Signin
+      p Signin expects: username, password - send through header, responds with JSON (token &amp; email) or 401
     li
       a(href='/v1/form/signin') Signin Form (for testing)
+      p A simple form to test with
     li
       a(href='/v1/users') Users
+      p Send the token through the header to access, responds with JSON (list of all users)
