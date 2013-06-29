@@ -2,9 +2,10 @@ var express = require('express'), users = require('./users'), decks = require('.
  
 var app = express();
 
+module.exports = app;
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
-
 
 app.get('/', function(req, res, next){
 	res.render('index', {
@@ -14,6 +15,7 @@ app.get('/', function(req, res, next){
 
 app.get('/v1/decks', decks.index);
 app.get('/v1/decks/publish', decks.publish);
+app.get('/v1/decks/form/publish', decks.indexForm);
 
 app.get('/v1/users', users.index);
 app.post('/v1/users/signin', users.signin);
