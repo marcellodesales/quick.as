@@ -30,7 +30,7 @@ exports.users = function(req, res) {
 
 	security.validateTokenUser(decoded.email, function(err, result) {
 
-		if (!result){
+		if (!result.isValid){
 			res.send({ status: 401, message: "Authentication failed" }, 401); 
 			return;
 		}

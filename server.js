@@ -12,6 +12,9 @@ app.get('/', function(req, res, next){
 	});
 });
 
+app.get('/v1/decks', decks.index);
+app.get('/v1/decks/publish', decks.publish);
+
 app.get('/v1/users', users.index);
 app.post('/v1/users/signin', users.signin);
 app.post('/v1/users/signup', users.signup);

@@ -27,6 +27,7 @@ exports.validateEmail = function(email) {
 exports.validateTokenUser = function(email, callback) {
   var isValid = false;
   var client = new pg.Client(postgres);
+  var response = [];
 
   if(client.connection != null)
     client.connect();
@@ -39,10 +40,12 @@ exports.validateTokenUser = function(email, callback) {
 
   query.on('row', function(r) {
       isValid = true;
+      response.push({user:r});
   });
 
   query.on('end', function() {
     client.end();
-    return callback(null, isValid);
+    response.push({isValid: isValid});
+    return callback(null, response);
   });
 };
