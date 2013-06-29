@@ -171,6 +171,43 @@ exports.signin = function(req, res) {
 	});
 };
 
+exports.userbytoken = function(req, res) {
+
+	if (req.headers.token == undefined) {
+		res.json({ status: 401, message: "Inavlid token, authentication failed" }, 401); 
+		return;
+	}
+
+	var decoded = jwt.decode(req.headers.token, tokenSecret);
+
+	security.validateTokenUser(decoded.email, function(err, result) {
+
+		if (!result.valid){
+			res.send({ status: 401, message: "Authentication failed" }, 401); 
+			return;
+		}
+
+		var client = new pg.Client(postgres);
+
+		client.connect();
+
+		var jsonArray = new Array();
+
+		var query = client.query("SELECT * FROM users WHERE email = $1", [decoded.email]);
+
+		query.on('row', function(row) {
+			jsonArray.push(row);
+		});
+
+		query.on('end', function() {
+			client.end();
+			res.send(jsonArray);
+		});
+
+	});
+
+};
+
 exports.signinForm = function(req, res) {
 	res.render('users/signin', {
 		title: 'Signin'

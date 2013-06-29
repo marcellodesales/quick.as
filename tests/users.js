@@ -3,7 +3,7 @@ var request = require('supertest');
 var assert  = require('assert');
 var should  = require('should');
 
-describe('Get /v1/users/list', function(){
+/*describe('Get /v1/users/list', function(){
     it('should respond 401',function(done){
         request(app)
         .get('/v1/users/list')
@@ -12,12 +12,27 @@ describe('Get /v1/users/list', function(){
           done(err);
         });
     });
-});
+});*/
 
-describe('Get /v1/users/list', function(){
+/*describe('Get /v1/users/list', function(){
     it('should respond json',function(done){
         request(app)
         .get('/v1/users/list')
+        .set('Accept', 'application/json')
+        .set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvQG5laWxraW5uaXNoLmNvbSJ9.niqSfyyJBOK_ArST0JW2x43yyM5tDNcoubnsBxHxayc')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res){
+          if (err) return done(err);
+          done()
+        });
+    });
+});*/
+
+describe('Get /v1/users/userbytoken', function(){
+    it('should respond json',function(done){
+        request(app)
+        .get('/v1/users/userbytoken')
         .set('Accept', 'application/json')
         .set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvQG5laWxraW5uaXNoLmNvbSJ9.niqSfyyJBOK_ArST0JW2x43yyM5tDNcoubnsBxHxayc')
         .expect(200)

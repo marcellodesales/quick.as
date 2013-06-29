@@ -16,6 +16,9 @@ block content
     //- li
     //-   a(href='/v1/users/form/signin') Signin Form
     //-   p A simple form to test with
+    //- li
+    //-  a(href='/v1/users/list') Users
+    //-  p GET. Headers: token. Responds with JSON (list of users) or 401
     li
-      a(href='/v1/users/list') Users
-      p GET. Headers: token. Responds with JSON (list of users) or 401
+      a(href='/v1/users/userbytoken') User
+      p GET. Headers: token. Responds with JSON (user for sent token) or 401
