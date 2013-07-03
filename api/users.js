@@ -1,6 +1,6 @@
 var jwt = require('jwt-simple'),
 	tokenSecret = "artdeko",
-	security = require('../libs/utilities'),
+	utilities = require('../libs/utilities'),
 	pg = require('pg'),
 	postgres = process.env.DATABASE_URL;
 
@@ -27,7 +27,7 @@ exports.users = function(req, res) {
 
 	var decoded = jwt.decode(req.headers.token, tokenSecret);
 
-	security.validateTokenUser(decoded.email, function(err, result) {
+	utilities.validateTokenUser(decoded.email, function(err, result) {
 
 		if (!result.valid){
 			res.send({ status: 401, message: "Authentication failed" }, 401); 
@@ -67,15 +67,15 @@ exports.signup = function(req, res) {
 	var errors = [];
 
 	var checkFields = function(fn) {
-		if (firstname === "")
+		if (!utilities.validateField(firstname))
 			errors.push( { name: "firstname", message: "Firstname is required" } );
-		if (lastname === "")
+		if (!utilities.validateField(lastname))
 			errors.push( { name: "lastname", message: "Lastname is required" } );
-		if (username === "")
+		if (!utilities.validateField(username))
 			errors.push( { name: "username", message: "Username is required" } );
-		if (!security.validateEmail(email))
+		if (!utilities.validateEmail(email))
 			errors.push( { name: "email", message: "Email is required & must be valid" } );
-		if (password === "")
+		if (!utilities.validateField(password))
 			errors.push( { name: "password", message: "Password is required" } );
 		return fn && fn(null, true);
 	};
@@ -113,7 +113,7 @@ exports.signup = function(req, res) {
 			client.end();
 			res.json({ errors: errors }, 403);
 		}else{
-			security.cryptPassword(password,function(err,pwd) {
+			utilities.cryptPassword(password,function(err,pwd) {
 				var query = client.query("INSERT INTO users(created,firstname,lastname,email,username,password) values($1,$2,$3,$4,$5,$6)", [new Date(), firstname, lastname, email, username, pwd]);
 
 				query.on('end', function() {
@@ -144,7 +144,7 @@ exports.signin = function(req, res) {
 
 	query.on('row', function(row) {
 
-		security.comparePassword(password, row.password, function(err,match) {
+		utilities.comparePassword(password, row.password, function(err,match) {
 			if (match)
 			{
 				var payload = { email: row.email };
@@ -175,7 +175,7 @@ exports.userByToken = function(req, res) {
 
 	var decoded = jwt.decode(req.headers.token, tokenSecret);
 
-	security.validateTokenUser(decoded.email, function(err, result) {
+	utilities.validateTokenUser(decoded.email, function(err, result) {
 
 		if (!result.valid){
 			res.send({ status: 401, message: "Authentication failed" }, 401); 

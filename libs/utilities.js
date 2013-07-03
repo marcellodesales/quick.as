@@ -24,6 +24,13 @@ exports.validateEmail = function(email) {
   return re.test(email);
 };
 
+exports.validateField= function(str) {
+  if (str === "" || str === null || str === undefined)
+    return false;
+  else
+    return true;
+};
+
 exports.validateTokenUser = function(email, callback) {
   var isValid = false;
   var client = new pg.Client(postgres);

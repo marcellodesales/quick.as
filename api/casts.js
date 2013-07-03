@@ -1,6 +1,6 @@
 var jwt = require('jwt-simple'),
 	tokenSecret = "artdeko",
-	security = require('../libs/utilities'),
+	utilities = require('../libs/utilities'),
 	pg = require('pg'),
 	AWS = require('aws-sdk'), 
 	postgres = process.env.DATABASE_URL;
@@ -40,7 +40,7 @@ exports.publish = function(req, res) {
 
 	var decoded = jwt.decode(req.headers.token, tokenSecret);
 
-	security.validateTokenUser(decoded.email, function(err, result) {
+	utilities.validateTokenUser(decoded.email, function(err, result) {
 
 		if (!result.valid) {
 			res.send({ status: 401, message: "Authentication failed" }, 401); 
