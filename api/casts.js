@@ -58,7 +58,8 @@ exports.publish = function(req, res) {
 			var response = {};
 
 			response["federationToken"] = data;
-			response["bucket"] = "example";
+			response["bucket-1"] = "quickcast-raw";
+			response["bucket-2"] = "quickcast";
 			response["user"] = result.user;
 
 			res.json([response]);
