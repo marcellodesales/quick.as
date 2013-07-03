@@ -1,5 +1,5 @@
 TESTS = tests/*.js
-test:
+tests:
 	mocha --timeout 5000 --reporter nyan $(TESTS)
 
-.PHONY: test
+.PHONY: tests
