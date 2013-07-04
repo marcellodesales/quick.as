@@ -54,7 +54,6 @@ exports.publish = function(req, res) {
 		var params = { 'Name' : 'Mac', 'Policy' : '{"Statement": [{"Effect": "Allow","Action": "s3:*","Resource": "*"}]}', 'DurationSeconds' : 60 * 60 * 1 };
 
 		sts.client.getFederationToken(params, function(err, data) {
-
 			var response = {};
 
 			response["federationToken"] = data;
@@ -62,7 +61,14 @@ exports.publish = function(req, res) {
 			response["bucket-2"] = "quickcast";
 			response["user"] = result.user;
 
-			res.json([response]);
+			client.query("INSERT INTO casts (id, ownerid, created, published) VALUES (DEFAULT, $1, $2, false) RETURNING id;", [result.user.id, new Date()])
+			.on('row', function(r) {
+				response["cast"] = r;
+			})
+			.on('end', function(r) {
+				client.end();
+				res.json([response]);
+			});			
 		});
 	});
 };
