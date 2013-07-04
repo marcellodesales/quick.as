@@ -71,7 +71,7 @@ exports.publish = function(req, res) {
 			})
 			.on('end', function(r) {
 				client.end();
-				res.json([response]);
+				res.json(response);
 			});			
 		});
 	});
