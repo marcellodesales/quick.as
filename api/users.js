@@ -186,17 +186,17 @@ exports.userByToken = function(req, res) {
 
 		client.connect();
 
-		var jsonArray = new Array();
+		var jsonObj;
 
 		var query = client.query("SELECT * FROM users WHERE email = $1", [decoded.email]);
 
 		query.on('row', function(row) {
-			jsonArray.push(row);
+			jsonObj = row;
 		});
 
 		query.on('end', function() {
 			client.end();
-			res.send(jsonArray);
+			res.send(jsonObj);
 		});
 	});
 };
