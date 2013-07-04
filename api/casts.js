@@ -47,6 +47,10 @@ exports.publish = function(req, res) {
 			return;
 		}
 
+		var client = new pg.Client(postgres);
+
+		client.connect();
+
 		AWS.config.update({accessKeyId: 'AKIAIZYVY67XOF34ZJWQ', secretAccessKey: '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', region: 'us-east-1'});
 
 		var sts = new AWS.STS();
