@@ -129,7 +129,7 @@ exports.publishComplete = function(req, res) {
 
 		client.connect();
 
-		client.query("UPDATE casts SET published = true WHERE id = $1", [req.headers.id])
+		client.query("UPDATE casts SET published = true WHERE id = $1", [req.headers.castId])
 		.on('row', function(r){
 			if (r.length === 0)
 				res.json({ status: 200, message: "Invalid id supplied" }, 200);

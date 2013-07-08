@@ -29,7 +29,7 @@ app.get('/api/v1/users/setup', users.setup); // Setup
 // Casts
 app.get('/api/v1/casts', casts.index);
 app.post('/api/v1/casts/publish', casts.publish);
-app.get('/api/v1/casts/publish/complete', casts.publishComplete);
+app.post('/api/v1/casts/publish/complete', casts.publishComplete);
 
 app.get('/api/v1/casts/setup', casts.setup); // Setup
 
