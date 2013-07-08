@@ -60,7 +60,7 @@ $$ language plpgsql;";
 };
 
 exports.publish = function(req, res) {
-	if (req.headers.token == undefined) {
+	if (req.headers.token === undefined) {
 		res.json({ status: 401, message: "Inavlid token, authentication failed" }, 401); 
 		return;
 	}
@@ -119,7 +119,7 @@ exports.publishComplete = function(req, res) {
 			return;
 		}
 
-		if (req.headers.id === undefined) {
+		if (req.headers.castid === undefined) {
 			res.json({ status: 400, message: "Invalid or no id supplied" }, 400); 
 			return;
 		}
@@ -128,15 +128,10 @@ exports.publishComplete = function(req, res) {
 
 		client.connect();
 
-		client.query("UPDATE casts SET published = true WHERE id = $1 AND size = $2 AND length = $3", [req.headers.castId, req.headers.size, req.headers.length])
-		.on('row', function(r){
-			if (r.length === 0)
-				res.json({ status: 200, message: "Invalid id supplied" }, 200);
-			else
-				res.json({ status: 200, message: "Successfully updated & published cast" }, 200);
-		})
+		client.query("UPDATE casts SET published = true WHERE castid = $1 AND size = $2 AND length = $3", [req.headers.castid, req.headers.size, req.headers.length])
 		.on('end', function(r) {
 			client.end();
+			res.json({ status: 200, message: "Successfully updated & published cast" }, 200);
 		});			
 	});
 };
