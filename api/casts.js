@@ -18,27 +18,27 @@ exports.setup = function(req, res) {
 	};
 
 	var createTables = function(fn) {
-		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, image VARCHAR(100), mp4 VARCHAR(100), ogv VARCHAR(100), webm VARCHAR(100), PRIMARY KEY (castid))")
+		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, PRIMARY KEY (castid))")
 		.on('end', function(r) {
 			return fn && fn(null, r);
 		});
 	};
 
 	var createFunctions = function(fn) {
-		// AddCast Function Expects: OwnerId, DateTime, Description, Name, Tags (comma separated)
-		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, text, text, text) RETURNS INTEGER AS $$ \
+		// AddCast Function Expects: OwnerId, DateTime, Description, Name, Inrro, Outro, Tags (comma separated)
+		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, varchar, varchar, varchar, varchar, text) RETURNS INTEGER AS $$ \
 BEGIN \
-INSERT INTO casts (castid, ownerid, created, published, description, name) \
-VALUES (DEFAULT, $1, $2, false, $3, $4); \
+INSERT INTO casts (castid, ownerid, created, published, description, name, intro, outro) \
+VALUES (DEFAULT, $1, $2, false, $3, $4, $5, $6); \
 INSERT INTO tags (name) \
 SELECT tag \
-FROM unnest(string_to_array($5, ',')) AS dt(tag) \
+FROM unnest(string_to_array($7, ',')) AS dt(tag) \
 WHERE NOT EXISTS ( \
 SELECT tagid \
 FROM tags \
 WHERE name = tag); \
 INSERT INTO casts_tags(castid, tagid) \
-SELECT currval('casts_castid_seq'::regclass), A.tagid FROM tags A WHERE A.name = ANY (string_to_array($5, ',')); \
+SELECT currval('casts_castid_seq'::regclass), A.tagid FROM tags A WHERE A.name = ANY (string_to_array($7, ',')); \
 RETURN currval('casts_castid_seq'::regclass); \
 END; \
 $$ language plpgsql;";
@@ -92,8 +92,7 @@ exports.publish = function(req, res) {
 			response["bucket-2"] = "quickcast";
 			response["user"] = result.user;
 
-			//client.query("INSERT INTO casts (id, ownerid, created, published) VALUES (DEFAULT, $1, $2, false) RETURNING id;", [result.user.id, new Date()])
-			client.query("SELECT AddCast($1,$2,$3,$4,$5);", [result.user.id, new Date(), req.headers.description, req.headers.name, req.headers.tags])
+			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.id, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, req.headers.tags])
 			.on('row', function(r) {
 				response["cast"] = r;
 			})
@@ -129,7 +128,7 @@ exports.publishComplete = function(req, res) {
 
 		client.connect();
 
-		client.query("UPDATE casts SET published = true WHERE id = $1", [req.headers.castId])
+		client.query("UPDATE casts SET published = true WHERE id = $1 AND size = $2 AND length = $3", [req.headers.castId, req.headers.size, req.headers.length])
 		.on('row', function(r){
 			if (r.length === 0)
 				res.json({ status: 200, message: "Invalid id supplied" }, 200);
