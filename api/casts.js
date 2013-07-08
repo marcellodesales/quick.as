@@ -29,7 +29,7 @@ exports.setup = function(req, res) {
 		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, text, text, text) RETURNS INTEGER AS $$ \
 BEGIN \
 INSERT INTO casts (castid, ownerid, created, published, description, name) \
-VALUES (DEFAULT, $1, $2, $3, $4, false); \
+VALUES (DEFAULT, $1, $2, false, $3, $4); \
 INSERT INTO tags (name) \
 SELECT tag \
 FROM unnest(string_to_array($5, ',')) AS dt(tag) \
