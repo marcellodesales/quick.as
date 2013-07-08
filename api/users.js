@@ -11,11 +11,11 @@ exports.setup = function(req, res) {
 
 	client.query("DROP TABLE IF EXISTS users");
 
-	var query = client.query("CREATE TABLE users (id SERIAL, created TIMESTAMP, firstname VARCHAR(35), lastname VARCHAR(35), email VARCHAR(200), username VARCHAR(15), password VARCHAR(200), PRIMARY KEY (id))");
+	var query = client.query("CREATE TABLE users (userid SERIAL, created TIMESTAMP, firstname VARCHAR(35), lastname VARCHAR(35), email VARCHAR(200), username VARCHAR(15), password VARCHAR(200), PRIMARY KEY (userid))");
 
 	query.on('end', function() {
 		client.end();
-		res.send("complete!");
+		res.send("Users DB setup complete");
 	});
 };
 
