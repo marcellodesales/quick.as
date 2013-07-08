@@ -128,7 +128,7 @@ exports.publishComplete = function(req, res) {
 
 		client.connect();
 
-		client.query("UPDATE casts SET published = true WHERE castid = $1 AND size = $2 AND length = $3", [req.headers.castid, req.headers.size, req.headers.length])
+		client.query("UPDATE casts SET published = true, size = $1, length = $2 WHERE castid = $3", [req.headers.size, req.headers.length, req.headers.castid])
 		.on('end', function(r) {
 			client.end();
 			res.json({ status: 200, message: "Successfully updated & published cast" }, 200);
