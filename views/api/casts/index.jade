@@ -6,7 +6,7 @@ block content
       p GET. Drop and Create table 'casts, tags, casts_tags'
     li 
       a(href='/api/v1/casts/publish') Publish
-      p POST. Headers: token, description, name, tags (comma separated), intro, outro. Responds with JSON (temp amazon access keys, requesting user details and cast id) or 401
+      p PUT. Headers: token, description, name, tags (comma separated), intro, outro. Responds with JSON (temp amazon access keys, requesting user details and cast id) or 401
     li 
       a(href='/api/v1/casts/publish/complete') Publish Complete
-      p POST. Headers: token, castid, size, length. Responds with JSON 200, 400 or 401
+      p PUT. Headers: token, castid, size, length. Responds with JSON 200, 400 or 401
