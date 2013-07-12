@@ -2,14 +2,14 @@ var bcrypt = require('bcrypt'),
     jwt = require('jwt-simple'),
     pg = require('pg'), 
     postgres = process.env.DATABASE_URL,
-    settings = require('../settings');
+    config = require('../config');
 
 exports.getSecret = function(){
-  return settings.bcrypt.secret;
+  return config.bcrypt.secret;
 }
 
 exports.getAmazonDetails = function(){
-  return settings.amazon;
+  return config.amazon;
 }
 
 exports.encodeToken = function(payload){

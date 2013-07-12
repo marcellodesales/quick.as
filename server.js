@@ -17,13 +17,15 @@ app.use(express.static(__dirname + '/public'));
 /* Site */
 
 app.get('/', site.index);
+app.get('/make', site.make);
+app.get('/source', site.watch);
 
 /* API */
 
 app.get('/api/v1', api.index);
 
 // Users
-// app.get('/api/v1/users', users.index);
+app.post('/api/v1/users', users.index);
 app.post('/api/v1/users/signin', users.signin);
 app.put('/api/v1/users/signup', users.signup);
 app.get('/api/v1/users/userbytoken', users.userByToken);
