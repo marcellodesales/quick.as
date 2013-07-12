@@ -61,9 +61,9 @@ exports.validateToken = function(req, callback){
   client.query("SELECT * FROM users WHERE email = $1", [decoded.email], function(err, result) {
     if (err) return callback(err);
     client.end();
-    if (result != undefined && result.rowCount > 1)
-      return callback(null, { valid: true, user: result.rows[0] });
-    else  
+    //if (result != undefined && result.rowCount > 1)
+      //return callback(null, { valid: true, user: result.rows[0] });
+    //else  
       return callback("Invalid token, authentication failed");
   });
 };
