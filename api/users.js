@@ -142,9 +142,9 @@ exports.userCasts = function(req, res){
 			if (e) res.json(e, 400);
 			client.end();
 			if (casts.rowCount === 0)
-				res.json({ casts: null },200)
+				res.json({ casts: null, user: result.user },200)
 			else
-				res.json(casts, 200);
+				res.json({ casts: casts, user: result.user }, 200);
 		});
 	});
 };
