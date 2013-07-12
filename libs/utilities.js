@@ -51,19 +51,23 @@ exports.validateToken = function(req, callback){
       client = new pg.Client(postgres),
       response;
 
-  client.connect();
-
   if (token === undefined)
     return callback("Invalid token, authentication failed");
 
-  var decoded = jwt.decode(token, this.getSecret());
+  try{
+    var decoded = jwt.decode(token, this.getSecret());
+  }catch(e){
+    return callback(e);
+  }
+
+  client.connect();
 
   client.query("SELECT * FROM users WHERE email = $1", [decoded.email], function(err, result) {
-    if (err) return callback(err);
+    if (err) return callback(err,null);
     client.end();
-    //if (result != undefined && result.rowCount > 1)
-      //return callback(null, { valid: true, user: result.rows[0] });
-    //else  
+    if (result != undefined && result.rowCount > 0)
+      return callback(null, { valid: true, user: result.rows[0] });
+    else  
       return callback("Invalid token, authentication failed");
   });
 };

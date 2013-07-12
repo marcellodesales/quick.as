@@ -91,7 +91,7 @@ describe('Put /api/v1/users/signup username (in use)', function(){
     });
 });
 
-describe('Get /api/v1/users/userbytoken', function(){
+describe('Get /api/v1/users/userbytoken valid token', function(){
     it('should respond json',function(done){
         request(app)
         .get('/api/v1/users/userbytoken')
@@ -102,6 +102,21 @@ describe('Get /api/v1/users/userbytoken', function(){
         .end(function(err, res){
           if (err) return done(err);
           res.text.should.include('hello@neilkinnish.com')
+          done()
+        });
+    });
+});
+
+describe('Get /api/v1/users/userbytoken invalid token', function(){
+    it('should respond json',function(done){
+        request(app)
+        .get('/api/v1/users/userbytoken')
+        .set('Accept', 'application/json')
+        .set('token', 'eyJ0ArST0JW2x43yyM5tDNcoubnsBxHxayc')
+        .expect(401)
+        .expect('Content-Type', /json/)
+        .end(function(err, res){
+          if (err) return done(err);
           done()
         });
     });
