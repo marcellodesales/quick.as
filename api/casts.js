@@ -75,8 +75,8 @@ exports.publish = function(req, res) {
 			var response = {};
 
 			response["federationToken"] = data;
-			response["bucket-1"] = settings.amazon.sourceBucket;
-			response["bucket-2"] = settings.amazon.destinationBucket;
+			response["bucket-1"] = amazonDetails.sourceBucket;
+			response["bucket-2"] = amazonDetails.destinationBucket;
 			response["user"] = result.user;
 
 			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.id, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, req.headers.tags])
