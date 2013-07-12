@@ -25,7 +25,7 @@ app.get('/source', site.watch);
 app.get('/api/v1', api.index);
 
 // Users
-app.post('/api/v1/users', users.index);
+app.get('/api/v1/users', users.index);
 app.post('/api/v1/users/signin', users.signin);
 app.put('/api/v1/users/signup', users.signup);
 app.get('/api/v1/users/userbytoken', users.userByToken);
