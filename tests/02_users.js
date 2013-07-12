@@ -164,3 +164,18 @@ describe('Get /api/v1/users/signin with details', function(){
         });
     });
 });
+
+describe('Get /api/v1/users/usercasts top 10 casts', function(){
+    it('should respond json',function(done){
+        request(app)
+        .get('/api/v1/users/usercasts')
+        .set('Accept', 'application/json')
+        .set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvQG5laWxraW5uaXNoLmNvbSJ9.niqSfyyJBOK_ArST0JW2x43yyM5tDNcoubnsBxHxayc')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res){
+          if (err) return done(err);
+          done()
+        });
+    });
+});

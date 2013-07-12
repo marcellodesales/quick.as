@@ -29,6 +29,7 @@ app.get('/api/v1/users', users.index);
 app.post('/api/v1/users/signin', users.signin);
 app.put('/api/v1/users/signup', users.signup);
 app.get('/api/v1/users/userbytoken', users.userByToken);
+app.get('/api/v1/users/usercasts', users.userCasts);
 
 app.get('/api/v1/users/setup', users.setup); // Setup
 

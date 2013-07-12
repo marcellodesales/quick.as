@@ -107,7 +107,7 @@ exports.signin = function(req, res){
 	client.query("SELECT * FROM users WHERE username = $1", [username], function(err, result){
 		if (err) res.json(error, 401);
 		client.end();
-		if (result.rows.length === 0)
+		if (result.rowCount === 0)
 		  res.json(error, 401);
 		else{
 			var row = result.rows[0];
@@ -128,6 +128,24 @@ exports.userByToken = function(req, res){
 	utilities.validateToken(req, function(err, result){
 		if (err) res.json({ status: 401, message: err }, 401);
 		res.json(result.user);
+	});
+};
+
+exports.userCasts = function(req, res){
+	utilities.validateToken(req, function(err, result){
+		if (err) res.json({ status: 401, message: err }, 401);
+
+		var client = new pg.Client(postgres);
+		client.connect();
+		
+		client.query("SELECT * FROM casts WHERE ownerid = $1 ORDER BY created DESC LIMIT 10", [result.user.userid], function(e, casts){
+			if (e) res.json(e, 400);
+			client.end();
+			if (casts.rowCount === 0)
+				res.json({ casts: null },200)
+			else
+				res.json(casts, 200);
+		});
 	});
 };
 
