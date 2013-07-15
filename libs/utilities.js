@@ -57,21 +57,17 @@ exports.validateToken = function(req, callback){
   try{
     var decoded = jwt.decode(token, this.getSecret());
 
-    return callback(decoded);
+    if (decoded === undefined || decoded === null)
+      return callback("Invalid token, authentication failed");
   }catch(e){
     return callback(e);
   }
 
-
-
-  if (decoded === undefined || decoded === null)
-    return callback("Invalid token, authentication failed");
-
   client.connect();
 
   client.query("SELECT * FROM users WHERE email = $1", [decoded.email], function(err, result) {
-    if (err) return callback(err,null);
     client.end();
+    if (err) return callback(err,null);
     if (result != undefined && result.rowCount > 0)
       return callback(null, { valid: true, user: result.rows[0] });
     else  

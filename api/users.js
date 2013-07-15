@@ -16,7 +16,7 @@ exports.setup = function(req, res) {
 };
 
 exports.signup = function(req, res){
-	
+
 	var client = new pg.Client(postgres),
 		username = req.headers.username,
 		password = req.headers.password,
@@ -98,16 +98,16 @@ exports.signin = function(req, res){
 		password = req.headers.password,
 		error = { status: 401, message: "Authentication failed for supplied credentials" };
 
-	client.connect();
-
 	if (username === undefined || password === undefined) {
 		res.json(error, 401);
 		return;
 	}
 
+	client.connect();
+
 	client.query("SELECT * FROM users WHERE username = $1", [username], function(err, result){
-		if (err) res.json(error, 401);
 		client.end();
+		if (err) res.json(error, 401);
 		if (result.rowCount === 0)
 		  res.json(error, 401);
 		else{
@@ -140,8 +140,8 @@ exports.userCasts = function(req, res){
 		client.connect();
 		
 		client.query("SELECT * FROM casts WHERE ownerid = $1 ORDER BY created DESC LIMIT 10", [result.user.userid], function(e, casts){
-			if (e) res.json(e, 400);
 			client.end();
+			if (e) res.json(e, 400);
 			if (casts.rowCount === 0)
 				res.json({ casts: null, user: result.user },200)
 			else
