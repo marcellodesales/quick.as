@@ -16,6 +16,7 @@ exports.setup = function(req, res) {
 };
 
 exports.signup = function(req, res){
+	
 	var client = new pg.Client(postgres),
 		username = req.headers.username,
 		password = req.headers.password,
