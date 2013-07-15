@@ -69,9 +69,11 @@ exports.publish = function(req, res) {
 
 		AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
 
-		var params = { 'Name' : 'Mac', 'Policy' : '{"Statement": [{"Effect": "Allow","Action": "s3:*","Resource": "*"}]}', 'DurationSeconds' : 60 * 60 * 1 };
+		var params = { 'Name' : 'Temporary', 'Policy' : '{"Statement": [{"Effect": "Allow","Action": "s3:*","Resource": "*"}]}', 'DurationSeconds' : 1200 };
 
 		sts.client.getFederationToken(params, function(err, data){
+			if (err) res.json({ status: 500, message: err }, 500); 
+
 			var response = {};
 
 			response["federationToken"] = data;
