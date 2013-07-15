@@ -2,7 +2,10 @@ var jwt = require('jwt-simple'),
 	utilities = require('../libs/utilities'),
 	pg = require('pg'),
 	AWS = require('aws-sdk'), 
-	postgres = process.env.DATABASE_URL;
+	postgres = process.env.DATABASE_URL,
+	amazonDetails = utilities.getAmazonDetails();
+
+AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
 
 exports.setup = function(req, res) {
 	var client = new pg.Client(postgres);
@@ -61,10 +64,7 @@ exports.publish = function(req, res) {
 	utilities.validateToken(req, function(err, result){
 		if (err) res.json({ status: 401, message: err }, 401);
 
-		AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
-
-		var client = new pg.Client(postgres), 
-			amazonDetails = utilities.getAmazonDetails(),
+		var client = new pg.Client(postgres),
 			sts = new AWS.STS();
 
 		client.connect();
