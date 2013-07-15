@@ -72,7 +72,7 @@ exports.publish = function(req, res) {
 		var params = { 'Name' : 'Temporary', 'Policy' : '{"Statement": [{"Effect": "Allow","Action": "s3:*","Resource": "*"}]}', 'DurationSeconds' : 1200 };
 
 		sts.client.getFederationToken(params, function(err, data){
-			if (err) res.json({ status: 500, message: err }, 500); 
+			if (err) res.json({ status: 500, message: err, amazon: amazonDetails }, 500); 
 
 			var response = {};
 
