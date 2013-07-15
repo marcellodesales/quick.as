@@ -81,7 +81,7 @@ exports.publish = function(req, res) {
 			response["bucket-2"] = amazonDetails.destinationBucket;
 			response["user"] = result.user;
 
-			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.id, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, req.headers.tags])
+			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, req.headers.tags])
 				.on('row', function(r){
 					response["cast"] = r;
 				})
