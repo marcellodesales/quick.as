@@ -56,9 +56,13 @@ exports.validateToken = function(req, callback){
 
   try{
     var decoded = jwt.decode(token, this.getSecret());
+
+    return callback(decoded);
   }catch(e){
     return callback(e);
   }
+
+
 
   if (decoded === undefined || decoded === null)
     return callback("Invalid token, authentication failed");
