@@ -25,13 +25,13 @@ $(function() {
 
 	switch(item){
 		case 2:
-			$(".cc").attr("href", "http://alejandroescamilla.com").text("Photo credit: Aleks Dorohovich");
+			$(".cc").attr("href", "http://doctype.me").text("Photo credit: Aleks Dorohovich");
 			break;
 		case 1:
 			$(".cc").attr("href", "http://imluke.me").text("Photo credit: Luke Chesser");
 			break;
 		default:
-			$(".cc").attr("href", "http://imluke.me").text("Photo credit: Alejandro Escamilla");
+			$(".cc").attr("href", "http://alejandroescamilla.com").text("Photo credit: Alejandro Escamilla");
 	}
 
 	$(".banner").addClass("img-" + item);

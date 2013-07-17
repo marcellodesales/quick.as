@@ -4,7 +4,7 @@ var assert  = require('assert');
 var should  = require('should');
 
 describe('Put /api/v1/users/setup success', function(){
-    it('should respond json',function(done){
+    it('should drop and rebuild postgres and return json',function(done){
         request(app)
         .get('/api/v1/users/setup')
         .expect(200)

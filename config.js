@@ -15,7 +15,7 @@ config.amazon.region = process.env.AWS_REGION || "us-east-1";
 config.amazon.sourceBucket = process.env.AWS_BUCKET_SOURCE || "quickcast-raw";
 config.amazon.destinationBucket = process.env.AWS_BUCKET || "quickcast";
 
-config.bcrypt.secret = process.env.BCRYPT_SECRET || "secrets";
+config.bcrypt.secret = process.env.BCRYPT_SECRET || "artdeko";
 
 config.redis.url = process.env.REDISCLOUD_URL || "127.0.0.1:6379";
 config.redis.password = process.env.REDISCLOUD_PASSWORD || "";

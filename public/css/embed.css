@@ -362,9 +362,6 @@ textarea:focus {
   .cf:after {
     clear: both; }
 
-/* 
- * Breakpoints
- */
 .container {
   background-color: #2b2b2b;
   text-align: center;
@@ -392,11 +389,6 @@ textarea:focus {
   background-position: 50% 60%;
   min-height: 10em; }
 
-@media all and (min-width: 30em) {
-  .container {
-    background-color: #2b2b2b;
-    text-align: center;
-    padding: 2em; } }
 .video {
   -webkit-user-select: none;
   -moz-user-select: none;

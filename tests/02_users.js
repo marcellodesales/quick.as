@@ -4,7 +4,7 @@ var assert  = require('assert');
 var should  = require('should');
 
 describe('Put /api/v1/users/signup no details', function(){
-    it('should respond json',function(done){
+    it('should 403 and respond json',function(done){
         request(app)
         .put('/api/v1/users/signup')
         .expect(403)
@@ -17,7 +17,7 @@ describe('Put /api/v1/users/signup no details', function(){
 });
 
 describe('Put /api/v1/users/signup success', function(){
-    it('should respond json',function(done){
+    it('should 200 and respond json',function(done){
         request(app)
         .put('/api/v1/users/signup')
         .set('username', 'neil')
@@ -36,7 +36,7 @@ describe('Put /api/v1/users/signup success', function(){
 });
 
 describe('Put /api/v1/users/signup missing details', function(){
-    it('should respond json',function(done){
+    it('should 403 and respond respond json',function(done){
         request(app)
         .put('/api/v1/users/signup')
         .set('username', 'neil')
@@ -54,7 +54,7 @@ describe('Put /api/v1/users/signup missing details', function(){
 });
 
 describe('Put /api/v1/users/signup email (in use)', function(){
-    it('should respond json',function(done){
+    it('should 403 and respond json',function(done){
         request(app)
         .put('/api/v1/users/signup')
         .set('username', 'neil1')
@@ -73,7 +73,7 @@ describe('Put /api/v1/users/signup email (in use)', function(){
 });
 
 describe('Put /api/v1/users/signup username (in use)', function(){
-    it('should respond json',function(done){
+    it('should 403 and respond json',function(done){
         request(app)
         .put('/api/v1/users/signup')
         .set('username', 'neil')
@@ -92,7 +92,7 @@ describe('Put /api/v1/users/signup username (in use)', function(){
 });
 
 describe('Get /api/v1/users/userbytoken valid token', function(){
-    it('should respond json',function(done){
+    it('should 200 and respond json',function(done){
         request(app)
         .get('/api/v1/users/userbytoken')
         .set('Accept', 'application/json')
@@ -108,7 +108,7 @@ describe('Get /api/v1/users/userbytoken valid token', function(){
 });
 
 describe('Get /api/v1/users/userbytoken invalid token', function(){
-    it('should respond json',function(done){
+    it('should 401 and respond json',function(done){
         request(app)
         .get('/api/v1/users/userbytoken')
         .set('Accept', 'application/json')
