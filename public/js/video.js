@@ -7,7 +7,7 @@ $(function() {
 	$("a.embed").on("click", function() {
 		if ($("a.embed textarea").length === 0) {
 			$("a.embed span").hide();
-			$(this).append("<textarea><iframe src='http://" + document.domain + "/embed' frameborder='0' width='600' height='450'></iframe></textarea>");
+			$(this).append("<textarea><iframe src='http://" + window.location.host + "/embed" + window.location.pathname + "' frameborder='0' width='600' height='450'></iframe></textarea>");
 		}
 		return false;
 	});

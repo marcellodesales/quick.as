@@ -1,8 +1,8 @@
 var bcrypt = require('bcrypt'), 
     jwt = require('jwt-simple'),
     pg = require('pg'), 
-    postgres = process.env.DATABASE_URL,
     config = require('../config'),
+    postgres = config.postgres.connection,
     redis = require('redis');
 
 exports.getSecret = function(){
@@ -13,8 +13,15 @@ exports.getAmazonDetails = function(){
   return config.amazon;
 }
 
+exports.getDBConnection = function(){
+   return config.postgres.connection;
+}
+
 exports.getRedisConfig = function(){
-  return config.redis;
+  var redisUrl = config.redis.url.split(':');
+  var redisConfig = { host: redisUrl[0], port: redisUrl[1], password: config.redis.password };
+
+  return redisConfig;
 }
 
 exports.encodeToken = function(payload){
@@ -85,8 +92,6 @@ exports.logViews = function(video_entry, req, callback){
   var redisConfig = this.getRedisConfig(),
       client = redis.createClient(redisConfig.port, redisConfig.host)
       ip = req.headers["x-forwarded-for"];
-
-  var redisConfig = this.getRedisConfig();
 
   client.auth(redisConfig.password);
 

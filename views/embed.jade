@@ -1,0 +1,11 @@
+extend layouts/embed
+block content
+	div(class="container #{processed}")
+		if processed === "processing"
+			p Processing QuickCast
+		else if processed === "failed"
+			p This QuickCast failed to process
+		else
+			video
+				source(src="#{mp4}")
+				source(src="#{webm}")

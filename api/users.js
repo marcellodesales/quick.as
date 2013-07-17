@@ -1,7 +1,7 @@
 var jwt = require('jwt-simple'),
 	utilities = require('../libs/utilities'),
 	pg = require('pg'),
-	postgres = process.env.DATABASE_URL,
+	postgres = utilities.getDBConnection(),
 	Q = require('q');
 
 exports.setup = function(req, res) {

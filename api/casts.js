@@ -2,7 +2,7 @@ var jwt = require('jwt-simple'),
 	utilities = require('../libs/utilities'),
 	pg = require('pg'),
 	AWS = require('aws-sdk'), 
-	postgres = process.env.DATABASE_URL,
+	postgres = utilities.getDBConnection(),
 	amazonDetails = utilities.getAmazonDetails();
 
 AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
@@ -54,7 +54,7 @@ $$ language plpgsql;";
 		createTables(function (err, result){
 			createFunctions(function (err, result){
 				client.end();
-				res.send("Casts DB setup complete");
+				res.json({ "complete": true }, 200);
 			});
 		});
 	});
