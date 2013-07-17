@@ -74,7 +74,8 @@ exports.video = function(req, res) {
 							username: data.username,
 							when: a.from(b),
 							processed: processed,
-							id: video_entry
+							id: video_entry,
+							pageTitle: data.name
 						});
 
 					});
