@@ -14,6 +14,9 @@ config.amazon.secretAccessKey = process.env.AWS_SECRET || "pM4tvAjJEPaD3HbJNuhvo
 config.amazon.region = process.env.AWS_REGION || "us-east-1";
 config.amazon.sourceBucket = process.env.AWS_BUCKET_SOURCE || "quickcast-raw";
 config.amazon.destinationBucket = process.env.AWS_BUCKET || "quickcast";
+config.amazon.pipelineId = "1372799278435-8rj4bm"; // change to env
+config.amazon.webM = "1374088399513-l7fe4b"; // change to env
+config.amazon.mp4 = "1351620000001-100070"; // change to env
 
 config.bcrypt.secret = process.env.BCRYPT_SECRET || "artdeko";
 

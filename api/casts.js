@@ -102,14 +102,59 @@ exports.publishComplete = function(req, res) {
 	utilities.validateToken(req, function(err, result){
 		if (err) res.json({ status: 401, message: err }, 401);
 
-		var client = new pg.Client(postgres);
-		client.connect();
+		// transcoding
+		var str = '/%s/%s/quickcast.%s';
 
-		client.query("UPDATE casts SET published = true, size = $1, length = $2 WHERE castid = $3", [req.headers.size, req.headers.length, req.headers.castid])
-			.on('end', function(r) {
-				client.end();
-				res.json({ status: 200, message: "Successfully published" }, 200);
+		var et = new AWS.ElasticTranscoder();
+
+		var params_mp4 = { 
+			'pipeline_id': amazonDetails.pipelineId,
+			'input': {
+				'key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'frame_rate': 'auto',
+				'resolution': 'auto',
+				'aspect_ratio': 'auto',
+				'interlaced': 'auto',
+				'container': 'auto'
+			},
+			'output': {
+				'key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'preset_id': amazonDetails.mp4,
+				'thumbnail_pattern': "",
+				'rotate': '0'
+			}
+		};
+
+		var params_webm = { 
+			'pipeline_id': amazonDetails.pipelineId,
+			'input': {
+				'key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+				'frame_rate': 'auto',
+				'resolution': 'auto',
+				'aspect_ratio': 'auto',
+				'interlaced': 'auto',
+				'container': 'auto'
+			},
+			'output': {
+				'key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+				'preset_id': amazonDetails.webm,
+				'thumbnail_pattern': "",
+				'rotate': '0'
+			}
+		};
+
+		et.createJob(params_mp4, function(err1, data1) {
+			et.createJob(params_webm, function(err2, data2) {
+				var client = new pg.Client(postgres);
+				client.connect();
+
+				client.query("UPDATE casts SET published = true, size = $1, length = $2 WHERE castid = $3", [req.headers.size, req.headers.length, req.headers.castid])
+					.on('end', function(r) {
+						client.end();
+						res.json({ status: 200, message: "Successfully published" }, 200);
+					});
 			});
+		});
 	});
 };
 
