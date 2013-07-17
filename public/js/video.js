@@ -32,7 +32,7 @@ e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
 		}
 
 		// If we get this far then reset the video size
-		$('video').css({ "width":"100%","height":"auto"});
+		$('video').css({ "min-width":"100%","width":"100%","height":"auto"});
 		
 		return this.each(function() {	
 			

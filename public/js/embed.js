@@ -10,7 +10,7 @@ $(function() {
 
 	$.fn.videoPlayer = function(options) {
 
-		$('video').css({ "width":"100%","height":"auto"});
+		$('video').css({ "min-width":"100%","width":"100%","height":"auto"});
 
 		// Handle mobile devices
 		if (/mobile/i.test(navigator.userAgent)) {
