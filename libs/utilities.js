@@ -2,7 +2,8 @@ var bcrypt = require('bcrypt'),
     jwt = require('jwt-simple'),
     pg = require('pg'), 
     postgres = process.env.DATABASE_URL,
-    config = require('../config');
+    config = require('../config'),
+    redis = require('redis');
 
 exports.getSecret = function(){
   return config.bcrypt.secret;
@@ -10,6 +11,10 @@ exports.getSecret = function(){
 
 exports.getAmazonDetails = function(){
   return config.amazon;
+}
+
+exports.getRedisConfig = function(){
+  return config.redis;
 }
 
 exports.encodeToken = function(payload){
@@ -72,5 +77,53 @@ exports.validateToken = function(req, callback){
       return callback(null, { valid: true, user: result.rows[0] });
     else  
       return callback("Invalid token, authentication failed");
+  });
+};
+
+// This needs more thought and time - possible race condition
+exports.logViews = function(video_entry, req, callback){
+  var redisConfig = this.getRedisConfig(),
+      client = redis.createClient(redisConfig.port, redisConfig.host)
+      ip = req.headers["x-forwarded-for"];
+
+  var redisConfig = this.getRedisConfig();
+
+  client.auth(redisConfig.password);
+
+  if (ip === undefined)
+    ip = req.connection.remoteAddress;
+
+  client.get(video_entry+"_"+ip, function(err, reply) {
+    if (reply === null) {
+      client.set(video_entry+"_"+ip, new Date());
+      client.incr(video_entry);
+    }
+  });
+
+  client.get(video_entry, function(err, reply) {
+    if (reply === "20"){
+      client.del(video_entry);
+      client.keys(video_entry + "_*", function(err,replies) {
+        client.del(replies);
+        client.quit();
+      });
+
+      var pClient = new pg.Client(postgres);
+      pClient.connect();
+
+      pClient.query("UPDATE casts SET views = views + $1 WHERE castid = $2", [5, video_entry])
+        .on('end', function() {
+          pClient.end();
+        });
+    }
+    else
+      client.quit();
+
+    var count = 0;
+
+    if (reply != null)
+      count = parseInt(reply);
+
+    callback(null, count);
   });
 };

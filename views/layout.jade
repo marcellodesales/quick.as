@@ -1,14 +1,19 @@
 !!!5
-html
+html(lang="en")
   head
-    title #{title}
+    meta(charset="utf-8")
+    meta(name="HandheldFriendly", content="True")
+    meta(name="MobileOptimized", content="320")
+    mata(name="viewport", content="width=device-width, initial-scale=1")
+    title= QuickCast
+    link(rel="stylesheet", href="/css/app.min.css")
+    link(rel="stylesheet", href="/css/layout.min.css", media="(min-width:1em)")
+    script(src="/js/modernizr.min.js")
+    script(src="//use.typekit.net/wom0nvr.js")
+    script try{Typekit.load();}catch(e){}
   body
-    header
-      h1 Public site
-    .container
-      .main-content
-        block content
-  script(src='//code.jquery.com/jquery-2.0.0.min.js', type='application/javascript')
-  | <script type='text/javascript'>
-  block script
-  | </script>
+    .wrapper
+      block content
+      include includes/video-footer.html
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js")
+    script(src="/js/video.min.js")

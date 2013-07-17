@@ -19,7 +19,7 @@ exports.setup = function(req, res) {
 	};
 
 	var createTables = function(fn) {
-		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, PRIMARY KEY (castid))")
+		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, views INTEGER, PRIMARY KEY (castid))")
 			.on('end', function(r) {
 				return fn && fn(null, r);
 			});
@@ -29,8 +29,8 @@ exports.setup = function(req, res) {
 		// Expects: OwnerId, DateTime, Description, Name, Intro, Outro, Tags (comma separated)
 		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, varchar, varchar, varchar, varchar, text) RETURNS INTEGER AS $$ \
 BEGIN \
-INSERT INTO casts (castid, ownerid, created, published, description, name, intro, outro) \
-VALUES (DEFAULT, $1, $2, false, $3, $4, $5, $6); \
+INSERT INTO casts (castid, ownerid, created, published, description, name, intro, outro, views) \
+VALUES (DEFAULT, $1, $2, false, $3, $4, $5, $6, 0); \
 INSERT INTO tags (name) \
 SELECT tag \
 FROM unnest(string_to_array($7, ',')) AS dt(tag) \

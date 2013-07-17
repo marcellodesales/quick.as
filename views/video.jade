@@ -1,0 +1,24 @@
+extend layout
+block content
+	div(class="container #{processed}")
+		if processed === "processing"
+			p Processing QuickCast
+		else if processed === "failed"
+			p QuickCast failed to process
+		else
+			video
+				source(src="#{mp4}")
+				source(src="#{webm}")
+	.content.watch
+		.detail
+			h1 #{title}
+			h2 by #{username} &bull; #{when} &bull; #{views} views
+			!{body}
+		.tags
+			span Example
+			.share
+				h3 Share
+				include includes/twitter-share.html
+				a(href="#embed", class="embed")
+					span Embed
+				a(href="http://quick.as/6732") quick.as/6732

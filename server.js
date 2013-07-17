@@ -8,17 +8,19 @@ var app = express();
 
 module.exports = app;
 
+var oneDay = 86400000;
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.static(__dirname + '/public'));
+app.use(express.compress());
+app.use(express.favicon(__dirname + '/public/favicon.ico'));
+app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 
 /* Site */
 
-app.get('/', site.index);
-app.get('/make', site.make);
-app.get('/source', site.watch);
+app.get('/embed/:entry', site.embed);
 
 /* API */
 
@@ -39,6 +41,8 @@ app.put('/api/v1/casts/publish', casts.publish);
 app.put('/api/v1/casts/publish/complete', casts.publishComplete);
 
 app.get('/api/v1/casts/setup', casts.setup); // Setup
+
+app.get('/:entry', site.video);
 
 var port = process.env.PORT || 5000;
 
