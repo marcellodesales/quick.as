@@ -10,18 +10,14 @@ $(function() {
 
 	$.fn.videoPlayer = function(options) {
 
+		$('video').css({ "width":"100%","height":"auto"});
+
 		// Handle mobile devices
 		if (/mobile/i.test(navigator.userAgent)) {
-			var padding = $(".container").css('padding-left').replace('px','');
-			$("video").attr("controls", true)
-				.attr("width", window.screen.width - (parseInt(padding)*2))
-				.attr("height", (window.screen.width - (parseInt(padding)*2)) / 1.6);
-
+			$('.container').css({ "padding":"0"});
+			$("video").attr("controls", true);
 			return;
 		}
-
-		// If we get this far then reset the video size
-		$('video').css({ "width":"100%","height":"auto"});
 		
 		return this.each(function() {	
 			
