@@ -20,6 +20,7 @@ app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 
 /* Site */
 
+app.get('/', site.root);
 app.get('/embed/:entry', site.embed);
 
 /* API */
@@ -41,6 +42,8 @@ app.put('/api/v1/casts/publish', casts.publish);
 app.put('/api/v1/casts/publish/complete', casts.publishComplete);
 
 app.get('/api/v1/casts/setup', casts.setup); // Setup
+
+/* Site Video */
 
 app.get('/:entry', site.video);
 

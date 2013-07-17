@@ -399,19 +399,15 @@ a {
 /*
  * Header: Logo;
  */
-/*.logo-head{
-	background-color:#2b2b2b;
+.page-head-general {
+  background-color: #43ac74; }
+  .page-head-general > div {
+    max-width: 62.5em;
+    margin: 0 auto;
+    padding: 1em 1em .5em 1em; }
+  .page-head-general .ident {
+    display: inline-block; }
 
-	> div{
-		max-width:62.5em;
-		margin:0 auto;
-		padding:1em 1em .5em 1em;
-	}
-
-	.ident{
-		display:inline-block;
-	}
-}*/
 /*
  * Header
  */
@@ -793,6 +789,89 @@ a {
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
         box-shadow: none; }
+
+/*
+ * Content: 404
+ */
+.content.not-found {
+  padding: 1em; }
+  .content.not-found h1 {
+    font-size: 30px;
+    font-size: 2rem;
+    line-height: 1.53333;
+    line-height: 1.3em;
+    text-transform: normal;
+    color: #313f3b;
+    font-weight: 700;
+    margin-bottom: .5em; }
+  .content.not-found p {
+    font-size: 18px;
+    font-size: 1.2rem;
+    line-height: 1.27778;
+    line-height: 1.4em;
+    color: #999999;
+    font-weight: 500;
+    margin-top: 1em; }
+
+/*
+ * Content: General
+ */
+.content.general {
+  padding: 1em; }
+  .content.general h1 {
+    font-size: 20px;
+    font-size: 1.33333rem;
+    line-height: 1.15;
+    line-height: 1.3em;
+    text-transform: uppercase;
+    color: #313f3b;
+    font-weight: 700;
+    margin-bottom: .5em; }
+  .content.general h2 {
+    font-size: 15px;
+    font-size: 1rem;
+    line-height: 1.53333;
+    line-height: 1.3em;
+    color: #313f3b;
+    font-weight: 700;
+    margin-bottom: 2em; }
+  .content.general p {
+    font-size: 15px;
+    font-size: 1rem;
+    line-height: 1.53333;
+    line-height: 1.4em;
+    color: #999999;
+    font-weight: 500;
+    margin-top: 1em; }
+  .content.general ul, .content.general ol {
+    padding: 1em 0 0 1.5em; }
+    .content.general ul li, .content.general ol li {
+      font-size: 15px;
+      font-size: 1rem;
+      line-height: 1.53333;
+      line-height: 1.6em;
+      color: #999999; }
+  .content.general blockquote {
+    border-left: 4px solid #e0dfdb;
+    padding-left: 1em; }
+    .content.general blockquote p {
+      color: #313f3b; }
+  .content.general pre {
+    font-size: 15px;
+    font-size: 1rem;
+    line-height: 1.53333;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    font-family: monospace;
+    background-color: #fff;
+    border: 1px dotted #c1c0b7;
+    padding: 1em;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    color: #999999; }
 
 /*
  * Footer

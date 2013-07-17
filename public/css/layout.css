@@ -36,11 +36,9 @@
   /*
    * Header: Logo;
    */
-  /*.logo-head{
-  	> div{
-  		padding:1em 2em .5em 2em;
-  	}
-  }*/
+  .page-head-general > div {
+    padding: 1em 2em .5em 2em; }
+
   /*
    * Header
    */
@@ -122,6 +120,22 @@
       .content.watch .tags .share {
         padding-top: 1em;
         text-align: right; }
+
+  /*
+   * Content: General
+   */
+  .content.general {
+    padding: 3em 2em; }
+
+  /*
+   * Content: 404
+   */
+  .content.not-found {
+    padding: 3em 2em; }
+    .content.not-found h1 {
+      width: 70%; }
+    .content.not-found p {
+      width: 70%; }
 
   /*
    * Footer
@@ -316,7 +330,31 @@
       .content.watch .tags a.embed span {
         font-size: 12px;
         font-size: 0.8rem;
-        line-height: 1.91667; } }
+        line-height: 1.91667; }
+
+  /*
+   * Content: General
+   */
+  .content.general h1 {
+    font-size: 30px;
+    font-size: 2rem;
+    line-height: 1.53333;
+    line-height: 1.3em; }
+  .content.general h2 {
+    font-size: 18px;
+    font-size: 1.2rem;
+    line-height: 1.27778;
+    line-height: 1.3em; }
+  .content.general p {
+    font-size: 18px;
+    font-size: 1.2rem;
+    line-height: 1.27778;
+    line-height: 1.4em; }
+  .content.general ul li, .content.general ol li {
+    font-size: 18px;
+    font-size: 1.2rem;
+    line-height: 1.27778;
+    line-height: 1.6em; } }
 /*
  * Breakpoint 64.37
  */

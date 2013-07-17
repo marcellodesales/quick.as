@@ -21,6 +21,10 @@ markedOpts = {
 	langPrefix: 'lang-'
 }
 
+exports.root = function(req, res) {
+	res.redirect("http://quickcast.io");
+};
+
 exports.video = function(req, res) {
 	var video_entry = req.params.entry,
 		client = new pg.Client(postgres);
@@ -79,7 +83,7 @@ exports.video = function(req, res) {
 				});
 			});
 		}else{
-			res.json("404!", 404);
+			res.render('404', 404);
 		}
 	});
 };
@@ -131,7 +135,7 @@ exports.embed = function(req, res) {
 			});
 
 		}else{
-			res.json("404!", 404);
+			res.render('404', 404);
 		}
 	});
 };

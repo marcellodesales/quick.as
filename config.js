@@ -1,5 +1,7 @@
 var config = {};
 
+config.production = process.env.PROD || false;
+
 config.amazon = {};
 config.bcrypt = {};
 config.redis = {};
