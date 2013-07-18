@@ -75,7 +75,10 @@ exports.publish = function(req, res) {
 		var params = { 'Name' : 'Temporary', 'Policy' : '{"Statement": [{"Effect": "Allow","Action": "s3:*","Resource": "*"}]}', 'DurationSeconds' : 1200 };
 
 		sts.client.getFederationToken(params, function(err, data){
-			if (err) res.json({ status: 500, message: err, amazon: amazonDetails }, 500);
+			if (err) {
+				res.json({ status: 500, message: err, amazon: amazonDetails }, 500);
+				return;
+			}
 
 			client.connect();
 
@@ -86,7 +89,15 @@ exports.publish = function(req, res) {
 			response["bucket-2"] = amazonDetails.destinationBucket;
 			response["user"] = result.user;
 
-			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, req.headers.tags])
+			var tags = req.headers.tags;
+
+			var cleanTags = [];
+
+			for(var tag in tags){
+				cleanTags(tags[tag].trim());
+			}
+
+			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, cleanTags])
 				.on('row', function(r){
 					response["cast"] = r;
 				})

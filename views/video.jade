@@ -15,7 +15,8 @@ block content
 			h2 by #{username} &bull; #{when} &bull; #{views} views
 			!{body}
 		.tags
-			span Example
+			-for(var tag in tags)
+			span #{tag}
 			.share
 				if processed != "processing" && processed != "failed"
 					h3 Share
