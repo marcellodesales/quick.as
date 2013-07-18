@@ -245,6 +245,13 @@ $(function() {
 					setTimeout(function() { $that.find('.player').css("opacity", 0); }, 3000);
 				}else{
 					$that.find('.player').css("display", "none");
+					var sizePlay = ($video_width / 1.4);
+
+					if ($video_width > $video_height)
+						sizePlay = ($video_height / 1.4);
+
+					$(".play-button span").css("margin", "-" + parseInt(sizePlay/2) + "px 0 0 -" + parseInt(sizePlay/2) +"px");
+					$(".play-button span").css({ "width": parseInt(sizePlay/2) + "px", "height": parseInt(sizePlay/2) + "px"});
 					//var timedPlay = setTimeout(function() { $spc.play(); }, 3000);
 				}
 
