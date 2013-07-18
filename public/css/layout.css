@@ -126,6 +126,42 @@
    */
   .content.general {
     padding: 3em 2em; }
+    .content.general .body {
+      width: 70%; }
+    .content.general section {
+      margin-top: 2em;
+      display: block;
+      padding-bottom: 1em; }
+      .content.general section p {
+        margin-top: .6em;
+        position: relative;
+        padding-left: 3em;
+        padding-top: .2em; }
+      .content.general section h2 {
+        position: relative;
+        padding-left: 3em;
+        padding-top: .2em; }
+      .content.general section h2:before {
+        font-size: 30px;
+        font-size: 2rem;
+        line-height: 1.53333;
+        line-height: 1em;
+        color: #c1c0b7;
+        content: 'Q.';
+        position: absolute;
+        top: 0;
+        left: 0; }
+      .content.general section p:before {
+        font-size: 30px;
+        font-size: 2rem;
+        line-height: 1.53333;
+        line-height: 1em;
+        font-weight: 700;
+        color: #c1c0b7;
+        content: 'A.';
+        position: absolute;
+        top: 0;
+        left: 0; }
 
   /*
    * Content: 404

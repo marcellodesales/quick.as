@@ -362,6 +362,9 @@ textarea:focus {
   .cf:after {
     clear: both; }
 
+video {
+  display: block; }
+
 .container {
   background-color: #2b2b2b;
   text-align: center;

@@ -7,7 +7,7 @@ $(function() {
 	$("a.embed").on("click", function() {
 		if ($("a.embed textarea").length === 0) {
 			$("a.embed span").hide();
-			var video_width = $this.attr("data-width");
+			var video_width = $(this).attr("data-width");
 			if (video_width > 300)
 				video_width = "100%";
 			$(this).append("<textarea><iframe src='http://" + window.location.host + "/embed" + window.location.pathname + "' scrolling='no' frameborder='0' width='" + video_width + "' allowfullscreen></iframe><script>!function(){function e(){var e=document.getElementsByName('quickcast')

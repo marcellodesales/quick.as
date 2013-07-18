@@ -110,7 +110,7 @@ exports.publishComplete = function(req, res) {
 		}
 
 		// transcoding
-		var str = '/%s/%s/quickcast.%s';
+		var str = '%s/%s/quickcast.%s';
 
 		var et = new AWS.ElasticTranscoder();
 
@@ -151,7 +151,15 @@ exports.publishComplete = function(req, res) {
 		};
 
 		et.createJob(params_mp4, function(err1, data1) {
+			if (err1){
+				res.json({ status: 400, message: err1 }, 400);
+				return;
+			}
 			et.createJob(params_webm, function(err2, data2) {
+				if (err2){
+					res.json({ status: 400, message: err2 }, 400);
+					return;
+				}
 				var client = new pg.Client(postgres);
 				client.connect();
 

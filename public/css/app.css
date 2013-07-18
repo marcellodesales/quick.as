@@ -396,6 +396,9 @@ a {
   a:hover {
     text-decoration: none; }
 
+video {
+  display: block; }
+
 /*
  * Header: Logo;
  */
@@ -822,18 +825,50 @@ a {
     font-size: 1.33333rem;
     line-height: 1.15;
     line-height: 1.3em;
-    text-transform: uppercase;
     color: #313f3b;
     font-weight: 700;
     margin-bottom: .5em; }
+  .content.general section {
+    margin-top: 2em;
+    display: block;
+    padding-bottom: 1em; }
+    .content.general section p {
+      margin-top: .6em;
+      position: relative;
+      padding-left: 2em;
+      padding-top: 0em; }
+    .content.general section h2 {
+      position: relative;
+      padding-left: 2em;
+      padding-top: 0em; }
+    .content.general section h2:before {
+      font-size: 20px;
+      font-size: 1.33333rem;
+      line-height: 1.15;
+      line-height: 1em;
+      color: #c1c0b7;
+      content: 'Q.';
+      position: absolute;
+      top: 0;
+      left: 0; }
+    .content.general section p:before {
+      font-size: 20px;
+      font-size: 1.33333rem;
+      line-height: 1.15;
+      line-height: 1em;
+      font-weight: 700;
+      color: #c1c0b7;
+      content: 'A.';
+      position: absolute;
+      top: 0;
+      left: 0; }
   .content.general h2 {
     font-size: 15px;
     font-size: 1rem;
     line-height: 1.53333;
     line-height: 1.3em;
     color: #313f3b;
-    font-weight: 700;
-    margin-bottom: 2em; }
+    font-weight: 700; }
   .content.general p {
     font-size: 15px;
     font-size: 1rem;
@@ -1007,7 +1042,8 @@ h1 span {
   background-repeat: no-repeat;
   background-size: 50px 50px;
   background-position: 50% 60%;
-  min-height: 10em; }
+  min-height: 10em;
+  padding: 1em; }
 
 .container.failed {
   background-color: #D97363;
@@ -1015,8 +1051,15 @@ h1 span {
   background-repeat: no-repeat;
   background-size: 50px 50px;
   background-position: 50% 60%;
-  min-height: 10em; }
+  min-height: 10em;
+  padding: 1em; }
 
+@media all and (min-width: 30em) {
+  .container.processing {
+    padding: 2em; }
+
+  .container.failed {
+    padding: 2em; } }
 .video {
   -webkit-user-select: none;
   -moz-user-select: none;
