@@ -89,12 +89,11 @@ exports.publish = function(req, res) {
 			response["bucket-2"] = amazonDetails.destinationBucket;
 			response["user"] = result.user;
 
-			var tags = req.headers.tags;
-
 			var cleanTags = [];
+			var tags = req.headers.tags.split(',');
 
 			for(var tag in tags){
-				cleanTags(tags[tag].trim());
+				cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
 			}
 
 			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, cleanTags])
