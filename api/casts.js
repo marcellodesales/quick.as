@@ -4,7 +4,8 @@ var jwt = require('jwt-simple'),
 	AWS = require('aws-sdk'), 
 	postgres = utilities.getDBConnection(),
 	amazonDetails = utilities.getAmazonDetails(),
-	util = require('util');
+	util = require('util'),
+	Hashids = require('hashids');
 
 AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
 
