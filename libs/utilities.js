@@ -18,8 +18,15 @@ exports.getDBConnection = function(){
 }
 
 exports.getRedisConfig = function(){
-  var redisUrl = config.redis.url.split(':');
-  var redisConfig = { host: redisUrl[0], port: redisUrl[1], password: config.redis.password };
+  //var redisUrl = config.redis.url.split(':');
+  //var redisConfig = { host: redisUrl[0], port: redisUrl[1], password: config.redis.password };
+
+  var rtg   = require("url").parse(config.redis.url);
+  //var redis = require("redis").createClient(rtg.port, rtg.hostname);
+
+  //redis.auth(rtg.auth.split(":")[1]);
+
+  var redisConfig = { host: rtg.hostname, port: rtg.port, password: config.redis.password };
 
   return redisConfig;
 }
