@@ -63,17 +63,15 @@ exports.validateToken = function(req, callback){
       client = new pg.Client(postgres),
       response;
 
-  if (token === undefined)
+  if (token === undefined || token === null)
     return callback("Invalid token, authentication failed");
 
-  try{
-    var decoded = jwt.decode(token, this.getSecret());
+  var decoded = null;
 
-    if (decoded === undefined || decoded === null)
-      return callback("Invalid token, authentication failed");
-  }catch(e){
-    return callback(e);
-  }
+  try{ decoded = jwt.decode(token, this.getSecret()); }catch(e){ return callback(e); }
+
+  if (decoded === undefined || decoded === null)
+    return callback("Invalid token, authentication failed");
 
   client.connect();
 
