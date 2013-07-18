@@ -74,10 +74,11 @@ exports.video = function(req, res) {
 							username: data.username,
 							when: a.from(b),
 							processed: processed,
-							id: video_entry,
+							id: data.castid,
 							pageTitle: data.name,
 							video_width: data.width,
-							video_height: data.height
+							video_height: data.height,
+							uniqueid: video_entry
 						});
 
 					});
@@ -132,9 +133,10 @@ exports.embed = function(req, res) {
 					mp4: util.format(str, data.ownerid, video_entry, 'mp4'),
 					webm: util.format(str, data.ownerid, video_entry, 'webm'),
 					processed: processed,
-					id: video_entry,
+					id: data.castid,
 					video_width: data.width,
-					video_height: data.height
+					video_height: data.height,
+					uniqueid: video_entry
 				});
 
 			});
