@@ -165,7 +165,7 @@ exports.publishComplete = function(req, res) {
 				client.connect();
 
 				var hashids = new Hashids("quickyo"),
-    				hash = hashids.encrypt(result.user.userid, req.headers.castid);
+    				hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
 
 				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
 					.on('end', function(r) {

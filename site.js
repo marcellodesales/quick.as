@@ -78,7 +78,7 @@ exports.video = function(req, res) {
 							pageTitle: data.name,
 							video_width: data.width,
 							video_height: data.height,
-							uniqueid: video_entry
+							uniqueid: video_entry.toLowerCase()
 						});
 
 					});
@@ -136,7 +136,7 @@ exports.embed = function(req, res) {
 					id: data.castid,
 					video_width: data.width,
 					video_height: data.height,
-					uniqueid: video_entry
+					uniqueid: video_entry.toLowerCase()
 				});
 
 			});
