@@ -365,11 +365,13 @@ textarea:focus {
 .container {
   background-color: #2b2b2b;
   text-align: center;
-  padding: 1em; }
+  padding: 0;
+  line-height: 0; }
   .container p {
     font-size: 15px;
     font-size: 1rem;
     line-height: 1.53333;
+    line-height: 1.4em;
     color: rgba(0, 0, 0, 0.4);
     text-transform: uppercase; }
 
@@ -398,10 +400,7 @@ textarea:focus {
   position: relative;
   display: inline-block;
   overflow: hidden;
-  max-width: 100%;
-  margin: 0 auto;
-  min-width: 320px;
-  max-width: 58.5em; }
+  margin: 0 auto; }
 
 .player {
   -webkit-user-select: none;
@@ -415,11 +414,13 @@ textarea:focus {
   -o-transition: opacity 0.3s ease-in;
   transition: opacity 0.3s ease-in;
   background-color: #2b2b2b;
-  height: 70px;
+  height: 78px;
   width: 100%;
-  padding: 15px 0 0 0;
-  position: relative;
-  margin-top: -7px; }
+  padding: .7em;
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  opacity: 0; }
 
 .play-button {
   height: 100%;
@@ -428,6 +429,8 @@ textarea:focus {
   position: absolute;
   top: 0;
   left: 0;
+  bottom: 0;
+  right: 0;
   cursor: pointer; }
 
 .player .progress {
@@ -474,7 +477,7 @@ textarea:focus {
   position: absolute;
   top: 0;
   right: 0;
-  text-decoration: overline; }
+  text-decoration: none; }
 
 .player [class^="buffered"] {
   -webkit-border-radius: 5px;
@@ -505,8 +508,8 @@ textarea:focus {
   background-color: #43ac74;
   background-position: -34px 0;
   position: absolute;
-  top: 15px;
-  left: 0;
+  top: .7em;
+  left: .7em;
   cursor: pointer; }
   .player .pause-button:hover {
     background-color: #3A9565; }
@@ -522,8 +525,8 @@ textarea:focus {
   color: #fff;
   font-weight: normal;
   position: absolute;
-  right: 0;
-  top: 15px;
+  right: .7em;
+  top: .7em;
   letter-spacing: .1em; }
 
 .player .stime, .ttime {
@@ -539,8 +542,8 @@ textarea:focus {
   height: 30px;
   width: 30px;
   position: absolute;
-  left: 45px;
-  top: 15px;
+  left: 3.5em;
+  top: .7em;
   z-index: 9999;
   padding: 0;
   background-color: #666;
@@ -556,10 +559,10 @@ textarea:focus {
 .player .fullscreen {
   cursor: pointer;
   position: absolute;
-  left: 90px;
+  left: 6.4em;
   height: 30px;
   width: 30px;
-  top: 15px; }
+  top: .7em; }
 
 .player .fullscreen a {
   -webkit-border-radius: 100%;

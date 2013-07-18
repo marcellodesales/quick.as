@@ -10,16 +10,18 @@ $(function() {
 
 	$.fn.videoPlayer = function(options) {
 
-		$('video').css({ "min-width":"100%","width":"100%","height":"auto"});
-
 		// Handle mobile devices
 		if (/mobile/i.test(navigator.userAgent)) {
-			$('.container').css({ "padding":"0"});
+			$("video").css({ "min-width":"100%","width":"100%","height":"auto"});
 			$("video").attr("controls", true);
 			return;
 		}
-		
-		return this.each(function() {	
+
+		return this.each(function() {
+
+			if(/chrome|mozilla/i.test(navigator.userAgent)) {
+				$(this).find("source[type='video/mp4']").remove();
+			}
 			
 			$(this)[0].load();
 			
@@ -27,12 +29,24 @@ $(function() {
 
 				var $this = $(this);
 
-				$this.wrap('<div class="video"></div>');
+				var $video_width = $this.attr("data-width");
+				var $video_height = $this.attr("data-height");
+				var $micro = false;
+
+				if ($video_width <= 300 || $video_height <= 300){
+					$micro = true;
+					$this.wrap('<div class="video micro"></div>');
+				}
+				else
+				{
+					$this.wrap('<div class="video"></div>');
+				}
+
+				$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
 				
 				var $that = $this.parent('.video');
 				
 				// The Structure of our video player
-				{
 					$('<div class="play-button"></div>'
 					     + '<div class="player">'
 					     + '<div class="pause-button"></div>'
@@ -66,8 +80,7 @@ $(function() {
 					       + '<a href="#"> </a>'
 					     + '</div>'
 					   + '</div>').appendTo($that);
-				}
-				
+
 				// Video information
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
@@ -223,7 +236,14 @@ $(function() {
 					bufferLength();
 
 				});
-								
+
+				if ($micro === false){
+					$that.find('.player').css("opacity", 1);
+					setTimeout(function() { $that.find('.player').css("opacity", 0); }, 3000);
+				}else{
+					//var timedPlay = setTimeout(function() { $spc.play(); }, 3000);
+				}
+
 				// When the user clicks play, bind a click event	
 				$that.find('.play-button, .pause-button').on('click', function() {
 					
@@ -269,6 +289,17 @@ $(function() {
 				// For usability purposes then bind a function to the body assuming that the user has clicked mouse
 				// down on the progress bar or volume bar
 				$('body, html').bind('mousemove', function(e) {
+
+					//if($begin == true) {
+						if ($micro != true){
+							$that.hover(function() {
+								$that.find('.player').css("opacity", 1);
+							}, function() {
+								$that.find('.player').css("opacity", 0);
+							});
+						}
+					//}
+
 					// For the progress bar controls
 					if($mclicking == true) {	
 						
@@ -309,9 +340,6 @@ $(function() {
 				// When the video ends the play button becomes a pause button
 				$spc.addEventListener('ended', function() {	
 					$playing = false;
-
-
-
 					// If the user is not dragging
 					if($draggingProgress == false) {
 						$('.play-button, .pause-button').removeClass("playing");
@@ -344,7 +372,6 @@ $(function() {
 						$that.find('.volume').removeClass("off");
 					}
 				});
-				
 				
 				// If the user lets go of the mouse, clicking is false for both volume and progress.
 				// Also the video will begin playing if it was playing before the drag process began.

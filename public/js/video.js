@@ -7,9 +7,12 @@ $(function() {
 	$("a.embed").on("click", function() {
 		if ($("a.embed textarea").length === 0) {
 			$("a.embed span").hide();
-			$(this).append("<textarea><iframe src='http://" + window.location.host + "/embed" + window.location.pathname + "' scrolling='no' frameborder='0' width='100%'></iframe><script>!function(){function e(){var e=document.getElementsByName('quickcast')
+			var video_width = $this.attr("data-width");
+			if (video_width > 300)
+				video_width = "100%";
+			$(this).append("<textarea><iframe src='http://" + window.location.host + "/embed" + window.location.pathname + "' scrolling='no' frameborder='0' width='" + video_width + "' allowfullscreen></iframe><script>!function(){function e(){var e=document.getElementsByName('quickcast')
 for(var n in e){var t=e[n].offsetWidth
-e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
+e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 		}
 
 		return false;
@@ -23,31 +26,40 @@ e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
 
 		// Handle mobile devices
 		if (/mobile/i.test(navigator.userAgent)) {
-			var padding = $(".container").css('padding-left').replace('px','');
 			$("video").attr("controls", true)
-				.attr("width", window.screen.width - (parseInt(padding)*2))
-				.attr("height", (window.screen.width - (parseInt(padding)*2)) / 1.6);
+				.attr("width", window.screen.width)
+				.attr("height", (window.screen.width / 1.6));
 
 			return;
 		}
-
-		// If we get this far then reset the video size
-		$('video').css({ "min-width":"100%","width":"100%","height":"auto"});
 		
 		return this.each(function() {	
-			
+
 			$(this)[0].load();
 			
 			$(this)[0].addEventListener('loadeddata', function() {
 
 				var $this = $(this);
 
-				$this.wrap('<div class="video"></div>');
+				var $video_width = $this.attr("data-width");
+				var $video_height = $this.attr("data-height");
+				var $micro = false;
+
+				if ($video_width <= 300 || $video_height <= 300){
+					$micro = true;
+					$this.wrap('<div class="video micro"></div>');
+				}
+				else
+				{
+					$this.wrap('<div class="video"></div>');
+				}
+
+				$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
 				
 				var $that = $this.parent('.video');
 				
 				// The Structure of our video player
-				{
+				//{
 					$('<div class="play-button"></div>'
 					     + '<div class="player">'
 					     + '<div class="pause-button"></div>'
@@ -81,7 +93,7 @@ e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
 					       + '<a href="#"> </a>'
 					     + '</div>'
 					   + '</div>').appendTo($that);
-				}
+				//}
 				
 				// Video information
 				var $spc = $(this)[0], // Specific video
@@ -238,9 +250,18 @@ e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
 					bufferLength();
 
 				});
+
+				if ($micro === false){
+					$that.find('.player').css("opacity", 1);
+					setTimeout(function() { $that.find('.player').css("opacity", 0); }, 3000);
+				}else{
+					//var timedPlay = setTimeout(function() { $spc.play(); }, 3000);
+				}
 								
 				// When the user clicks play, bind a click event	
 				$that.find('.play-button, .pause-button').on('click', function() {
+
+					//clearTimeout(timedPlay);
 					
 					// Set up a playing variable
 					if($spc.currentTime > 0 && $spc.paused == false && $spc.ended == false) {
@@ -284,6 +305,17 @@ e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
 				// For usability purposes then bind a function to the body assuming that the user has clicked mouse
 				// down on the progress bar or volume bar
 				$('body, html').bind('mousemove', function(e) {
+					
+					//if($begin == true) {
+						if ($micro != true){
+							$that.hover(function() {
+								$that.find('.player').css("opacity", 1);
+							}, function() {
+								$that.find('.player').css("opacity", 0);
+							});
+						}
+					//}
+
 					// For the progress bar controls
 					if($mclicking == true) {	
 						
@@ -324,9 +356,6 @@ e[n].height=t/1.6+80+'px'}}e(),window.onresize=e}()</script></textarea>");
 				// When the video ends the play button becomes a pause button
 				$spc.addEventListener('ended', function() {	
 					$playing = false;
-
-
-
 					// If the user is not dragging
 					if($draggingProgress == false) {
 						$('.play-button, .pause-button').removeClass("playing");

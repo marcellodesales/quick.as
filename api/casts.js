@@ -19,7 +19,7 @@ exports.setup = function(req, res) {
 	};
 
 	var createTables = function(fn) {
-		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, views INTEGER, PRIMARY KEY (castid))")
+		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, width INTEGER, height INTEGER, views INTEGER, PRIMARY KEY (castid))")
 			.on('end', function(r) {
 				return fn && fn(null, r);
 			});
@@ -29,8 +29,8 @@ exports.setup = function(req, res) {
 		// Expects: OwnerId, DateTime, Description, Name, Intro, Outro, Tags (comma separated)
 		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, varchar, varchar, varchar, varchar, text) RETURNS INTEGER AS $$ \
 BEGIN \
-INSERT INTO casts (castid, ownerid, created, published, description, name, intro, outro, views) \
-VALUES (DEFAULT, $1, $2, false, $3, $4, $5, $6, 0); \
+INSERT INTO casts (castid, ownerid, created, published, description, name, intro, outro, views, height, width) \
+VALUES (DEFAULT, $1, $2, false, $3, $4, $5, $6, 0, 0, 0); \
 INSERT INTO tags (name) \
 SELECT tag \
 FROM unnest(string_to_array($7, ',')) AS dt(tag) \
@@ -128,7 +128,7 @@ exports.publishComplete = function(req, res) {
 		var params_webm = { 
 			'pipeline_id': amazonDetails.pipelineId,
 			'input': {
-				'key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+				'key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
 				'frame_rate': 'auto',
 				'resolution': 'auto',
 				'aspect_ratio': 'auto',
@@ -148,7 +148,7 @@ exports.publishComplete = function(req, res) {
 				var client = new pg.Client(postgres);
 				client.connect();
 
-				client.query("UPDATE casts SET published = true, size = $1, length = $2 WHERE castid = $3", [req.headers.size, req.headers.length, req.headers.castid])
+				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4 WHERE castid = $5", [req.headers.size, req.headers.length, req.headers.width, req.headers.height, req.headers.castid])
 					.on('end', function(r) {
 						client.end();
 						res.json({ status: 200, message: "Successfully published" }, 200);

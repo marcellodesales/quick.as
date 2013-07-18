@@ -6,6 +6,6 @@ block content
 		else if processed === "failed"
 			p This QuickCast failed to process
 		else
-			video
+			video(data-width="#{video_width}", data-height="#{video_height}")
 				source(src="#{mp4}")
 				source(src="#{webm}")
