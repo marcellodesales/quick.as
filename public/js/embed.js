@@ -18,8 +18,7 @@ $(function() {
 		}
 
 		return this.each(function() {
-
-			if(/chrome|mozilla/i.test(navigator.userAgent)) {
+			if(/chrome/i.test(navigator.userAgent)) {
 				$(this).find("source[type='video/mp4']").remove();
 			}
 			
