@@ -40,13 +40,13 @@ exports.video = function(req, res) {
     		return;
     	}
 
-		if (!result1){
+		var data = result1.rows[0];
+
+		if (data === undefined){
 			client.end();
 			res.render('404', 404);
 			return;
 		}
-		
-		var data = result1.rows[0];
 
 		client.query("SELECT tags.name FROM casts_tags INNER JOIN tags ON (casts_tags.tagid = tags.tagid) WHERE casts_tags.castid = $1", [data.castid], function(err2, result2){
 				
@@ -54,7 +54,7 @@ exports.video = function(req, res) {
 
 			var tags = null;
 
-			if (!err2 && result2 != undefined){
+			if (!err2 && result2.rowCount > 0){
 				tags = result2.rows;
 			}
 
@@ -128,13 +128,13 @@ exports.embed = function(req, res) {
     		return;
 		}
 
-		if (!result1){
+		var data = result1.rows[0];
+
+		if (data === undefined){
 			res.render('404', 404);
 			return;
 		}
 			
-		var data = result1.rows[0];
-
 		var a = moment(data.created);
 		var b = moment(new Date());
 
