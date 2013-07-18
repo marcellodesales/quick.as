@@ -40,7 +40,7 @@ exports.video = function(req, res) {
     		return;
     	}
 
-		if (result1 === undefined && !result1.rows){
+		if (result1 === undefined || !result1.rows){
 			client.end();
 			res.render('404', 404);
 			return;

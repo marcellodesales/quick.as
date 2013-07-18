@@ -25,6 +25,11 @@ app.use(function(req, res, next) {
 		next();
 });
 
+app.use(function(err, req, res, next){
+	res.status(500);
+	res.render('500', { error: err });
+});
+
 /* Site */
 
 app.get('/', site.root);
