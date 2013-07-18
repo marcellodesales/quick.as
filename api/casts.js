@@ -96,7 +96,7 @@ exports.publish = function(req, res) {
 				cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
 			}
 
-			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, cleanTags])
+			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, cleanTags.join(",")])
 				.on('row', function(r){
 					response["cast"] = r;
 				})
@@ -188,7 +188,9 @@ exports.publishComplete = function(req, res) {
 };
 
 exports.index = function(req, res) {
+
 	res.render('api/casts/index', {
 		title: 'API'
 	});
+
 };
