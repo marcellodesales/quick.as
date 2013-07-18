@@ -20,7 +20,7 @@ exports.setup = function(req, res) {
 	};
 
 	var createTables = function(fn) {
-		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, width INTEGER, height INTEGER, views INTEGER, PRIMARY KEY (castid))")
+		client.query("CREATE TABLE casts_tags (castid INTEGER, tagid INTEGER, PRIMARY KEY (castid,tagid));CREATE TABLE tags (tagid SERIAL, name VARCHAR(100), PRIMARY KEY (tagid));CREATE TABLE casts (castid SERIAL, uniqueid VARCHAR(50), created TIMESTAMP, published BOOLEAN, name VARCHAR(50), description TEXT, ownerid INTEGER, intro TEXT, outro TEXT, length FLOAT, size FLOAT, width INTEGER, height INTEGER, views INTEGER, PRIMARY KEY (castid))")
 			.on('end', function(r) {
 				return fn && fn(null, r);
 			});
@@ -163,7 +163,11 @@ exports.publishComplete = function(req, res) {
 				var client = new pg.Client(postgres);
 				client.connect();
 
-				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4 WHERE castid = $5", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), req.headers.castid])
+
+				var hashids = new Hashids("quickyo"),
+    				hash = hashids.encrypt(result.user.userid, req.headers.castid);
+
+				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $5", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), req.headers.castid, hash])
 					.on('end', function(r) {
 						client.end();
 						res.json({ status: 200, message: "Successfully published" }, 200);

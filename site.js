@@ -31,7 +31,7 @@ exports.video = function(req, res) {
 
     client.connect();
 
-    client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE castid = $1", [video_entry], function(err, result){
+    client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE uniqueid = $1 AND published = true", [video_entry], function(err, result){
     	client.end();
 		if (result != undefined && result.rowCount > 0){
 			var data = result.rows[0];
@@ -97,7 +97,7 @@ exports.embed = function(req, res) {
 
     client.connect();
 
-    client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE castid = $1", [video_entry], function(err, result){
+    client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE uniqueid = $1 AND published = true", [video_entry], function(err, result){
     	client.end();
 		if (result != undefined && result.rowCount > 0){
 			var data = result.rows[0];
