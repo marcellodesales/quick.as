@@ -142,7 +142,7 @@ exports.publishComplete = function(req, res) {
 				'Interlaced': 'auto',
 				'Container': 'auto'
 			},
-			'output': {
+			'Output': {
 				'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
 				'PresetId': amazonDetails.webM,
 				'ThumbnailPattern': "",
