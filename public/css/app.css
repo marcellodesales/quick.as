@@ -387,15 +387,6 @@ html, body {
   position: relative;
   padding-bottom: 6.7em; }
 
-.wrapper:after {
-  content: 'base';
-  display: block;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background-color: red;
-  padding: 0 1em; }
-
 canvas {
   -ms-touch-action: double-tap-zoom; }
 

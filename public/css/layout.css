@@ -33,9 +33,6 @@
   /*
    * Breakpoint min 30
    */
-  .wrapper:after {
-    content: 'min 30em - 480px'; }
-
   /*
    * Header: Logo;
    */
@@ -194,9 +191,6 @@
   /*
    * Breakpoint 40.62
    */
-  .wrapper:after {
-    content: 'min 40.62em - 650px'; }
-
   /*
    * Header
    */
