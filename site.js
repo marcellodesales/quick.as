@@ -31,11 +31,12 @@ exports.video = function(req, res) {
 
     client.connect();
 
-    client.query("SELECT casts.*, users.username, tags.* FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE lower(casts.uniqueid) = $1 AND casts.published = true", [video_entry.toLowerCase()], function(err1, result1){
+    client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE lower(casts.uniqueid) = $1 AND casts.published = true", [video_entry.toLowerCase()], function(err1, result1){
     
     	if (err1) {
     		client.end();
-    		res.render('500', { error: err1 }, 500);
+			res.status(500);
+			res.render('500', { error: err1 });
     		return;
     	}
 
@@ -122,7 +123,8 @@ exports.embed = function(req, res) {
 		client.end();
 
 		if (err1){
-			res.render('500', { error: err1 }, 500);
+			res.status(500);
+			res.render('500', { error: err1 });
     		return;
 		}
 
