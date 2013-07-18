@@ -53,7 +53,7 @@ exports.video = function(req, res) {
 
 					s3.setBucket(amazonDetails.destinationBucket);
 
-					s3.head(util.format(fileCheck, data.ownerid, video_entry, 'mp4'), function (err, s3res) {
+					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err, s3res) {
 
 						var processed = null;
 
@@ -66,8 +66,8 @@ exports.video = function(req, res) {
 							processed = "failed";
 
 					    res.render('video', {
-							mp4: util.format(str, data.ownerid, video_entry, 'mp4'),
-							webm: util.format(str, data.ownerid, video_entry, 'webm'),
+							mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
+							webm: util.format(str, data.ownerid, data.castid, 'webm'),
 							body: content,
 							views: data.views + r,
 							title: data.name,
@@ -117,7 +117,7 @@ exports.embed = function(req, res) {
 
 			s3.setBucket(amazonDetails.destinationBucket);
 
-			s3.head(util.format(fileCheck, data.ownerid, video_entry, 'mp4'), function (err, s3res) {
+			s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err, s3res) {
 
 				var processed = null;
 
@@ -130,8 +130,8 @@ exports.embed = function(req, res) {
 					processed = "failed";
 
 			    res.render('embed', {
-					mp4: util.format(str, data.ownerid, video_entry, 'mp4'),
-					webm: util.format(str, data.ownerid, video_entry, 'webm'),
+					mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
+					webm: util.format(str, data.ownerid, data.castid, 'webm'),
 					processed: processed,
 					id: data.castid,
 					video_width: data.width,
