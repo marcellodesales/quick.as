@@ -152,7 +152,11 @@ exports.userCasts = function(req, res){
 		
 		client.query("SELECT * FROM casts WHERE ownerid = $1 ORDER BY created DESC LIMIT 10", [result.user.userid], function(e, casts){
 			client.end();
-			if (e) res.json(e, 400);
+			if (e) {
+				res.json(e, 400);
+				return;
+			}
+
 			if (casts.rowCount === 0)
 				res.json({ casts: null, user: result.user },200)
 			else
