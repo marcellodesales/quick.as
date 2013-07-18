@@ -107,7 +107,11 @@ exports.signin = function(req, res){
 
 	client.query("SELECT * FROM users WHERE username = $1", [username], function(err, result){
 		client.end();
-		if (err) res.json(error, 401);
+		if (err) {
+			res.json(error, 401);
+			return;
+		}
+
 		if (result.rowCount === 0)
 		  res.json(error, 401);
 		else{
@@ -127,14 +131,21 @@ exports.signin = function(req, res){
 
 exports.userByToken = function(req, res){
 	utilities.validateToken(req, function(err, result){
-		if (err) res.json({ status: 401, message: err }, 401);
-		res.json(result.user);
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
+		
+		res.json(result);
 	});
 };
 
 exports.userCasts = function(req, res){
 	utilities.validateToken(req, function(err, result){
-		if (err) res.json({ status: 401, message: err }, 401);
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
 
 		var client = new pg.Client(postgres);
 		client.connect();

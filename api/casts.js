@@ -62,7 +62,10 @@ $$ language plpgsql;";
 
 exports.publish = function(req, res) {
 	utilities.validateToken(req, function(err, result){
-		if (err) res.json({ status: 401, message: err }, 401);
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
 
 		var client = new pg.Client(postgres),
 			sts = new AWS.STS();
@@ -100,7 +103,10 @@ exports.publishComplete = function(req, res) {
 	}
 
 	utilities.validateToken(req, function(err, result){
-		if (err) res.json({ status: 401, message: err }, 401);
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
 
 		// transcoding
 		var str = '/%s/%s/quickcast.%s';
