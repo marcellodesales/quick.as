@@ -163,11 +163,10 @@ exports.publishComplete = function(req, res) {
 				var client = new pg.Client(postgres);
 				client.connect();
 
-
 				var hashids = new Hashids("quickyo"),
     				hash = hashids.encrypt(result.user.userid, req.headers.castid);
 
-				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $5", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), req.headers.castid, hash])
+				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
 					.on('end', function(r) {
 						client.end();
 						res.json({ status: 200, message: "Successfully published" }, 200);
