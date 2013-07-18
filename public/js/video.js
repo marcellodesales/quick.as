@@ -233,6 +233,9 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 				// Window resize to adjust the video
 				$(window).resize(function() {
 
+					//$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
+					$(".video").css("width","100%");
+
 					if ($spc.currentTime >= $duration)
 						$spc.currentTime = 0;
 
