@@ -115,38 +115,38 @@ exports.publishComplete = function(req, res) {
 		var et = new AWS.ElasticTranscoder();
 
 		var params_mp4 = { 
-			'pipeline_id': amazonDetails.pipelineId,
-			'input': {
-				'key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'frame_rate': 'auto',
-				'resolution': 'auto',
-				'aspect_ratio': 'auto',
-				'interlaced': 'auto',
-				'container': 'auto'
+			'PipelineId': amazonDetails.pipelineId,
+			'Input': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'FrameRate': 'auto',
+				'Resolution': 'auto',
+				'AspectRatio': 'auto',
+				'Interlaced': 'auto',
+				'Container': 'auto'
 			},
-			'output': {
-				'key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'preset_id': amazonDetails.mp4,
-				'thumbnail_pattern': "",
-				'rotate': '0'
+			'Output': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'PresetId': amazonDetails.mp4,
+				'ThumbnailPattern': "",
+				'Rotate': '0'
 			}
 		};
 
 		var params_webm = { 
-			'pipeline_id': amazonDetails.pipelineId,
-			'input': {
-				'key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'frame_rate': 'auto',
-				'resolution': 'auto',
-				'aspect_ratio': 'auto',
-				'interlaced': 'auto',
-				'container': 'auto'
+			'PipelineId': amazonDetails.pipelineId,
+			'Input': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'FrameRate': 'auto',
+				'Resolution': 'auto',
+				'AspectRatio': 'auto',
+				'Interlaced': 'auto',
+				'Container': 'auto'
 			},
 			'output': {
-				'key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
-				'preset_id': amazonDetails.webm,
-				'thumbnail_pattern': "",
-				'rotate': '0'
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+				'PresetId': amazonDetails.webM,
+				'ThumbnailPattern': "",
+				'Rotate': '0'
 			}
 		};
 

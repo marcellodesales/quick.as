@@ -17,8 +17,9 @@ block content
 		.tags
 			span Example
 			.share
-				h3 Share
-				include includes/twitter.html
-				a(href="#embed", class="embed")
-					span Embed
-				a(href="http://quick.as/#{id}") quick.as/#{id}
+				if processed === ""
+					h3 Share
+					include includes/twitter.html
+					a(href="#embed", class="embed")
+						span Embed
+					a(href="http://quick.as/#{id}") quick.as/#{id}
