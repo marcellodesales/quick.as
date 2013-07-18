@@ -4,7 +4,7 @@ var assert  = require('assert');
 var should  = require('should');
 
 /*describe('Put /api/v1/casts/publish', function(){
-    it('should respond json',function(done){
+    it('should respond 200 json',function(done){
         request(app)
         .put('/api/v1/casts/publish')
         .set('Accept', 'application/json')
@@ -24,7 +24,7 @@ var should  = require('should');
 });
 
 describe('Put /api/v1/casts/publish/complete', function(){
-    it('should respond json',function(done){
+    it('should respond 200 json',function(done){
         request(app)
         .put('/api/v1/casts/publish/complete')
         .set('Accept', 'application/json')
@@ -32,6 +32,8 @@ describe('Put /api/v1/casts/publish/complete', function(){
         .set('castid',1)
         .set('length',123.00)
         .set('size',123.00)
+        .set('width',123)
+        .set('height',123)
         .expect(200)
         .expect('Content-Type', /json/)
         .end(function(err, res){
