@@ -251,7 +251,7 @@ $(function() {
 						sizePlay = ($video_height / 1.4);
 
 					$(".play-button span").css("margin", "-" + parseInt(sizePlay/2) + "px 0 0 -" + parseInt(sizePlay/2) +"px");
-					$(".play-button span").css({ "width": parseInt(sizePlay/2) + "px", "height": parseInt(sizePlay/2) + "px"});
+					$(".play-button span").css({"width": parseInt(sizePlay) + "px", "height": parseInt(sizePlay) + "px"});
 					//var timedPlay = setTimeout(function() { $spc.play(); }, 3000);
 				}
 
