@@ -54,7 +54,11 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 					$this.wrap('<div class="video"></div>');
 				}
 
-				$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
+				if ($micro === false){
+					$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
+				}else{
+					$this.css({ "width":"100%","height":"auto","max-width":$video_width+"px"});
+				}
 				
 				var $that = $this.parent('.video');
 				
