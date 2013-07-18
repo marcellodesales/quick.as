@@ -40,7 +40,7 @@ exports.video = function(req, res) {
     		return;
     	}
 
-		if (result1){
+		if (result1 === undefined){
 			client.end();
 			res.render('404', 404);
 			return;
@@ -54,7 +54,7 @@ exports.video = function(req, res) {
 
 			var tags = null;
 
-			if (!err2 && result2){
+			if (!err2 && result2 != undefined){
 				tags = result2.rows;
 			}
 
@@ -128,7 +128,7 @@ exports.embed = function(req, res) {
     		return;
 		}
 
-		if (result1){
+		if (result1 === undefined){
 			res.render('404', 404);
 			return;
 		}
