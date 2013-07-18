@@ -32,14 +32,15 @@ exports.video = function(req, res) {
     client.connect();
 
     client.query("SELECT casts.*, users.username, tags.* FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE lower(casts.uniqueid) = $1 AND casts.published = true", [video_entry.toLowerCase()], function(err1, result1){
-    	client.end();
-
+    
     	if (err1) {
+    		client.end();
     		res.render('500', { error: err1 }, 500);
     		return;
     	}
 
 		if (result1 === undefined && !result1.rows){
+			client.end();
 			res.render('404', 404);
 			return;
 		}
@@ -52,9 +53,9 @@ exports.video = function(req, res) {
 
 			var tags = null;
 
-			//if (!err2 && result2 != undefined && result2.rows){
-			//	tags = result2.rows;
-			//}
+			if (!err2 && result2 != undefined && result2.rows){
+				tags = result2.rows;
+			}
 
 			utilities.logViews(video_entry, req, function(err3, r) {
 				marked(data.description, markedOpts, function (err4, content) {
@@ -118,6 +119,8 @@ exports.embed = function(req, res) {
     client.connect();
 
     client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE lower(casts.uniqueid) = $1 AND casts.published = true", [video_entry.toLowerCase()], function(err1, result1){
+		client.end();
+
 		if (err1){
 			res.render('500', { error: err1 }, 500);
     		return;
