@@ -59,8 +59,8 @@ exports.video = function(req, res) {
 
 						if (err && err.code === 404){
 							processed = "processing";
-							if (duration > 2)
-								processed = "failed";
+							//if (duration > 2)
+							//	processed = "failed";
 						}
 						else if (err && err.statusCode != 200)
 							processed = "failed";
