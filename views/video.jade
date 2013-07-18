@@ -17,7 +17,7 @@ block content
 		.tags
 			span Example
 			.share
-				if processed === ""
+				if processed != "processing" && processed != "failed"
 					h3 Share
 					include includes/twitter.html
 					a(href="#embed", class="embed")
