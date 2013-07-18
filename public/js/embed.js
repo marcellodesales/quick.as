@@ -244,6 +244,7 @@ $(function() {
 					$that.find('.player').css("opacity", 1);
 					setTimeout(function() { $that.find('.player').css("opacity", 0); }, 3000);
 				}else{
+					$that.find('.player').css("display", "none");
 					//var timedPlay = setTimeout(function() { $spc.play(); }, 3000);
 				}
 

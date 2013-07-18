@@ -1070,7 +1070,11 @@ h1 span {
   display: inline-block;
   overflow: hidden;
   margin: 0 auto;
-  max-width: 58.5em; }
+  min-width: 20em;
+  max-width: 58.5em;
+  text-align: center; }
+  .video video {
+    margin: 0 auto; }
 
 .player {
   -webkit-user-select: none;
