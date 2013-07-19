@@ -492,7 +492,8 @@ video {
       padding: 1em 1.5em;
       display: table-cell;
       vertical-align: middle;
-      text-align: center; }
+      text-align: center;
+      color: #f9f9f9; }
 
 .play-button.playing {
   opacity: 0; }
