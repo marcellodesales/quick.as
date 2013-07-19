@@ -22,6 +22,6 @@ block content
 				if processed != "processing" && processed != "failed"
 					h3 Share
 					include includes/twitter.html
-					a(href="#embed", class="embed", data-width="#{video_width}")
+					a(href="#embed", class="embed", data-width="#{video_width}", data-height="#{video_height}")
 						span Embed
 					a(href="http://quick.as/#{uniqueid}") quick.as/#{uniqueid}

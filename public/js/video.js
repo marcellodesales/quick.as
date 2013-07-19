@@ -5,13 +5,15 @@ $(function() {
 		if ($("a.embed textarea").length === 0) {
 			$("a.embed span").hide();
 			var video_width = $(this).attr("data-width");
-			if (video_width > 300)
-				video_width = "100%";
-			$(this).append("<textarea><iframe name='quickcast' src='http://" + window.location.host + "/embed" + window.location.pathname + "' scrolling='no' frameborder='0' width='" + video_width + "' allowfullscreen></iframe><script>!function(){function e(){var e=document.getElementsByName('quickcast')
+			var video_height = $(this).attr("data-height");
+			if (video_width > 300 && video_height > 300){
+				$(this).append("<textarea><iframe name='quickcast' src='http://" + window.location.host + "/embed" + window.location.pathname + "' scrolling='no' frameborder='0' width='100%' allowfullscreen></iframe><script>!function(){function e(){var e=document.getElementsByName('quickcast')
 for(var n in e){var t=e[n].offsetWidth
 e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
+			}else{
+				$(this).append("<textarea><iframe name='quickcast' src='http://" + window.location.host + "/embed" + window.location.pathname + "' scrolling='no' frameborder='0' width='" + video_width + "' height='" + video_height + "' allowfullscreen></iframe></textarea>");
+			}
 		}
-
 		return false;
 	});
 });
