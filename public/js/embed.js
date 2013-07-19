@@ -304,6 +304,8 @@ $(function() {
 							$(".play-button div").show();
 							$('.play-button, .pause-button').removeClass("playing");
 						}
+					}else{
+						$('.play-button, .pause-button').removeClass("playing");
 					}
 				});
 				

@@ -320,6 +320,8 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 							$(".play-button div").show();
 							$('.play-button, .pause-button').removeClass("playing");
 						}
+					}else{
+						$('.play-button, .pause-button').removeClass("playing");
 					}
 				});
 				
