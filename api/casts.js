@@ -180,7 +180,7 @@ exports.publishComplete = function(req, res) {
 				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
 					.on('end', function(r) {
 						client.end();
-						res.json({ status: 200, message: "Successfully published" }, 200);
+						res.json({ status: 200, message: "Successfully published", url: "http://quick.as/" + hash }, 200);
 					});
 			});
 		});
