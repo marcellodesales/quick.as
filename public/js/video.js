@@ -42,6 +42,8 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 
 				var $video_width = $this.attr("data-width");
 				var $video_height = $this.attr("data-height");
+				var $video_intro = $this.attr("data-intro");
+				var $video_outro = $this.attr("data-outro");
 				var $micro = false;
 
 				if ($video_width <= 300 || $video_height <= 300){
@@ -55,6 +57,7 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 
 				if ($micro === false){
 					$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
+					$(".play-button").append("<div><span></span></div>");
 				}else{
 					$this.css({ "width":"100%","height":"auto","max-width":$video_width+"px"});
 				}
@@ -85,6 +88,9 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 					+ '</div>').appendTo($that);
 
 				$that.bind('selectstart', function() { return false; });
+
+				if ($micro === false)
+					$(".play-button").append("<div><span></span></div>");
 
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
@@ -175,6 +181,10 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 						document.title = 'Paused ' + minutes+':'+seconds + ' / ' + tminutes+':'+tseconds;
 					else
 						document.title = $originalTitle;
+
+					if ($micro === false && curTime <= 0){
+						$(".play-button div span").text($video_intro);
+					}
 				}
 				
 				timeUpdate();
@@ -182,7 +192,6 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 				$spc.addEventListener('timeupdate', timeUpdate);
 
 				$(window).resize(function(){
-
 					$(".video").css("width","100%");
 
 					if ($spc.currentTime >= $duration)
@@ -225,11 +234,15 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 					}
 					
 					if($playing == false){
+						if($spc.currentTime > 0 && $spc.ended == false)
+							$('.play-button div').hide();
+
 						$('.play-button, .pause-button').removeClass("playing");
 						$spc.pause();
 						bufferLength();
 					}else{
 						$('.play-button, .pause-button').addClass("playing");
+						
 						$begin = true;
 						$spc.play();
 					}		
@@ -298,8 +311,12 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 				// When the video ends the play button becomes a pause button
 				$spc.addEventListener('ended', function() {	
 					$playing = false;
-					if($draggingProgress == false) 
+
+					if ($micro === false){
+						$(".play-button div span").text($video_outro);
+						$(".play-button div").show();
 						$('.play-button, .pause-button').removeClass("playing");
+					}
 				});
 				
 				$that.find('.volume').on('mousedown', function() {					

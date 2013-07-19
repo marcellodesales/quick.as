@@ -26,6 +26,8 @@ $(function() {
 
 				var $video_width = $this.attr("data-width");
 				var $video_height = $this.attr("data-height");
+				var $video_intro = $this.attr("data-intro");
+				var $video_outro = $this.attr("data-outro");
 				var $micro = false;
 
 				if ($video_width <= 300 || $video_height <= 300){
@@ -39,6 +41,7 @@ $(function() {
 
 				if ($micro === false){
 					$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
+					$(".play-button").append("<div><span></span></div>");
 				}else{
 					$this.css({ "width":"100%","height":"auto","max-width":$video_width+"px"});
 				}
@@ -69,6 +72,9 @@ $(function() {
 					+ '</div>').appendTo($that);
 
 				$that.bind('selectstart', function() { return false; });
+
+				if ($micro === false)
+					$(".play-button").append("<div><span></span></div>");
 
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
@@ -159,6 +165,10 @@ $(function() {
 						document.title = 'Paused ' + minutes+':'+seconds + ' / ' + tminutes+':'+tseconds;
 					else
 						document.title = $originalTitle;
+
+					if ($micro === false && curTime <= 0){
+						$(".play-button div span").text($video_intro);
+					}
 				}
 				
 				timeUpdate();
@@ -166,7 +176,6 @@ $(function() {
 				$spc.addEventListener('timeupdate', timeUpdate);
 
 				$(window).resize(function(){
-
 					$(".video").css("width","100%");
 
 					if ($spc.currentTime >= $duration)
@@ -209,11 +218,15 @@ $(function() {
 					}
 					
 					if($playing == false){
+						if($spc.currentTime > 0 && $spc.ended == false)
+							$('.play-button div').hide();
+
 						$('.play-button, .pause-button').removeClass("playing");
 						$spc.pause();
 						bufferLength();
 					}else{
 						$('.play-button, .pause-button').addClass("playing");
+						
 						$begin = true;
 						$spc.play();
 					}		
@@ -282,8 +295,12 @@ $(function() {
 				// When the video ends the play button becomes a pause button
 				$spc.addEventListener('ended', function() {	
 					$playing = false;
-					if($draggingProgress == false) 
+
+					if ($micro === false){
+						$(".play-button div span").text($video_outro);
+						$(".play-button div").show();
 						$('.play-button, .pause-button').removeClass("playing");
+					}
 				});
 				
 				$that.find('.volume').on('mousedown', function() {					

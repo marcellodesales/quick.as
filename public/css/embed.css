@@ -548,8 +548,7 @@ video {
   font-weight: normal;
   position: absolute;
   right: .7em;
-  top: .7em;
-  letter-spacing: .1em; }
+  top: .7em; }
 
 .player .stime, .ttime {
   color: #666; }

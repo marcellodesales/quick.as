@@ -104,7 +104,9 @@ exports.video = function(req, res) {
 							video_width: data.width,
 							video_height: data.height,
 							uniqueid: video_entry.toLowerCase(),
-							tags: tags
+							tags: tags,
+							video_intro: data.intro,
+							video_outro: data.outro
 						});
 					});
 				});
@@ -168,7 +170,9 @@ exports.embed = function(req, res) {
 				id: data.castid,
 				video_width: data.width,
 				video_height: data.height,
-				uniqueid: video_entry.toLowerCase()
+				uniqueid: video_entry.toLowerCase(),
+				video_intro: data.intro,
+				video_outro: data.outro
 			});
 
 		});
