@@ -90,13 +90,13 @@ exports.publish = function(req, res) {
 			response["user"] = result.user;
 
 			var cleanTags = [];
-			var tags = req.headers.tags.split(',');
+			var tags = req.body.tags.split(',');
 
 			for(var tag in tags){
 				cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
 			}
 
-			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.headers.description, req.headers.name, req.headers.intro, req.headers.outro, cleanTags.join(",")])
+			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.body.description, req.body.name, req.body.intro, req.body.outro, cleanTags.join(",")])
 				.on('row', function(r){
 					response["cast"] = r;
 				})
