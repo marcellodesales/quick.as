@@ -33,9 +33,7 @@ $(function() {
 				if ($video_width <= 300 || $video_height <= 300){
 					$micro = true;
 					$this.wrap('<div class="video micro"></div>');
-				}
-				else
-				{
+				}else{
 					$this.wrap('<div class="video"></div>');
 				}
 
@@ -261,8 +259,13 @@ $(function() {
 						});
 					}
 
-					if($mclicking == true) {	
-					
+					if($mclicking == true) {
+
+						if ($spc.currentTime > 0)
+							$('.play-button div').hide(200);
+						else
+							$('.play-button div').show(200);
+
 						$draggingProgress = true;
 
 						var progMove = 0;
@@ -274,8 +277,7 @@ $(function() {
 						if(x < 0){
 							progMove = 0;
 							$spc.currentTime = 0;
-						} 
-						else if(x > progWidth){
+						}else if(x > progWidth){
 							$spc.currentTime = $duration;
 							progMove = progWidth;	
 						}else{

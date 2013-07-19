@@ -277,8 +277,13 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 						});
 					}
 
-					if($mclicking == true) {	
-					
+					if($mclicking == true) {
+
+						if ($spc.currentTime > 0)
+							$('.play-button div').hide(200);
+						else
+							$('.play-button div').show(200);
+
 						$draggingProgress = true;
 
 						var progMove = 0;
@@ -299,7 +304,6 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 							currentTime = (x / progWidth) * $duration;
 							$spc.currentTime = currentTime;	
 						}
-						
 
 						$that.find('.progress-bar').css({'width' : progMove+'px'});
 						var buttonPos = (updProgWidth-$that.find('.progress-button').width());
