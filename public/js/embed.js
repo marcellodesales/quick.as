@@ -39,7 +39,9 @@ $(function() {
 
 				if ($micro === false){
 					$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
-					$(".play-button").append("<div><span></span></div>");
+					if ($video_intro != ""){
+						$(".play-button").append("<div><span>" + $video_intro + "</span></div>");
+					}
 				}else{
 					$this.css({ "width":"100%","height":"auto","max-width":$video_width+"px"});
 				}
@@ -70,9 +72,6 @@ $(function() {
 					+ '</div>').appendTo($that);
 
 				$that.bind('selectstart', function() { return false; });
-
-				if ($micro === false)
-					$(".play-button").append("<div><span></span></div>");
 
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
@@ -165,7 +164,11 @@ $(function() {
 						document.title = $originalTitle;
 
 					if ($micro === false && curTime <= 0){
-						$(".play-button div span").text($video_intro);
+						if ($video_intro != ""){
+							if ($(".play-button div").length === 0)
+								$(".play-button").append("<div><span></span></div>");
+							$(".play-button div span").text($video_intro);
+						}
 					}
 				}
 				
@@ -224,7 +227,6 @@ $(function() {
 						bufferLength();
 					}else{
 						$('.play-button, .pause-button').addClass("playing");
-						
 						$begin = true;
 						$spc.play();
 					}		
@@ -277,7 +279,8 @@ $(function() {
 						if(x < 0){
 							progMove = 0;
 							$spc.currentTime = 0;
-						}else if(x > progWidth){
+						} 
+						else if(x > progWidth){
 							$spc.currentTime = $duration;
 							progMove = progWidth;	
 						}else{
@@ -285,7 +288,6 @@ $(function() {
 							currentTime = (x / progWidth) * $duration;
 							$spc.currentTime = currentTime;	
 						}
-						
 
 						$that.find('.progress-bar').css({'width' : progMove+'px'});
 						var buttonPos = (updProgWidth-$that.find('.progress-button').width());
@@ -299,9 +301,13 @@ $(function() {
 					$playing = false;
 
 					if ($micro === false){
-						$(".play-button div span").text($video_outro);
-						$(".play-button div").show();
-						$('.play-button, .pause-button').removeClass("playing");
+						if ($video_outro != ""){
+							if ($(".play-button div").length === 0)
+									$(".play-button").append("<div><span></span></div>");
+							$(".play-button div span").text($video_outro);
+							$(".play-button div").show();
+							$('.play-button, .pause-button').removeClass("playing");
+						}
 					}
 				});
 				

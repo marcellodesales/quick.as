@@ -49,15 +49,15 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 				if ($video_width <= 300 || $video_height <= 300){
 					$micro = true;
 					$this.wrap('<div class="video micro"></div>');
-				}
-				else
-				{
+				}else{
 					$this.wrap('<div class="video"></div>');
 				}
 
 				if ($micro === false){
 					$this.css({ "min-width":"100%","width":"100%","height":"auto","max-width":$video_width+"px"});
-					$(".play-button").append("<div><span></span></div>");
+					if ($video_intro != ""){
+						$(".play-button").append("<div><span>" + $video_intro + "</span></div>");
+					}
 				}else{
 					$this.css({ "width":"100%","height":"auto","max-width":$video_width+"px"});
 				}
@@ -88,9 +88,6 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 					+ '</div>').appendTo($that);
 
 				$that.bind('selectstart', function() { return false; });
-
-				if ($micro === false)
-					$(".play-button").append("<div><span></span></div>");
 
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
@@ -183,7 +180,11 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 						document.title = $originalTitle;
 
 					if ($micro === false && curTime <= 0){
-						$(".play-button div span").text($video_intro);
+						if ($video_intro != ""){
+							if ($(".play-button div").length === 0)
+								$(".play-button").append("<div><span></span></div>");
+							$(".play-button div span").text($video_intro);
+						}
 					}
 				}
 				
@@ -242,7 +243,6 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 						bufferLength();
 					}else{
 						$('.play-button, .pause-button').addClass("playing");
-						
 						$begin = true;
 						$spc.play();
 					}		
@@ -317,9 +317,13 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 					$playing = false;
 
 					if ($micro === false){
-						$(".play-button div span").text($video_outro);
-						$(".play-button div").show();
-						$('.play-button, .pause-button').removeClass("playing");
+						if ($video_outro != ""){
+							if ($(".play-button div").length === 0)
+									$(".play-button").append("<div><span></span></div>");
+							$(".play-button div span").text($video_outro);
+							$(".play-button div").show();
+							$('.play-button, .pause-button').removeClass("playing");
+						}
 					}
 				});
 				
