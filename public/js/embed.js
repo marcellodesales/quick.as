@@ -308,7 +308,6 @@ $(function() {
 				});
 				
 				$that.find('.volume').on('click', function() {
-					alert($spc.volume)
 					if($spc.volume == 1){
 						$spc.volume = 0;
 						$that.find('.volume').addClass("off");

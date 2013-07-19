@@ -324,7 +324,6 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 				});
 				
 				$that.find('.volume').on('click', function() {
-					alert($spc.volume)
 					if($spc.volume == 1){
 						$spc.volume = 0;
 						$that.find('.volume').addClass("off");

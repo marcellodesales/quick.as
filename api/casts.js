@@ -14,7 +14,7 @@ exports.setup = function(req, res) {
 	client.connect();
 
 	var dropTables = function(fn) {
-		client.query("DROP TABLE IF EXISTS casts;DROP TABLE IF EXISTS tags;DROP TABLE IF EXISTS casts_tags;DROP FUNCTION AddCast;")
+		client.query("DROP TABLE IF EXISTS casts;DROP TABLE IF EXISTS tags;DROP TABLE IF EXISTS casts_tags;")
 			.on('end', function(r) {
 				return fn && fn(null, r);
 			});
