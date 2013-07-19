@@ -21,6 +21,8 @@ app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 app.use(function(req, res, next) {
 	if(req.url.substr(-1) == '/' && req.url.length > 1)
 		res.redirect(301, req.url.slice(0, -1).toLowerCase());
+	else if(req.url.match(/^[A-Z]/) != null)
+		res.redirect(301, req.url.toLowerCase());
 	else
 		next();
 });
