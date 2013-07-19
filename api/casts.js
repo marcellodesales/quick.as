@@ -14,7 +14,7 @@ exports.setup = function(req, res) {
 	client.connect();
 
 	var dropTables = function(fn) {
-		client.query("DROP TABLE IF EXISTS casts;DROP TABLE IF EXISTS tags;DROP TABLE IF EXISTS casts_tags")
+		client.query("DROP TABLE IF EXISTS casts;DROP TABLE IF EXISTS tags;DROP TABLE IF EXISTS casts_tags;DROP FUNCTION AddCast;")
 			.on('end', function(r) {
 				return fn && fn(null, r);
 			});
@@ -29,7 +29,7 @@ exports.setup = function(req, res) {
 
 	var createFunctions = function(fn) {
 		// Expects: OwnerId, DateTime, Description, Name, Intro, Outro, Tags (comma separated)
-		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, varchar, varchar, varchar, varchar, text) RETURNS INTEGER AS $$ \
+		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, text, varchar, varchar, varchar, text) RETURNS INTEGER AS $$ \
 BEGIN \
 INSERT INTO casts (castid, ownerid, created, published, description, name, intro, outro, views, height, width) \
 VALUES (DEFAULT, $1, $2, false, $3, $4, $5, $6, 0, 0, 0); \
