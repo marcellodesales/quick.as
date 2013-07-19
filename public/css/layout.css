@@ -125,9 +125,7 @@
    * Content: General
    */
   .content.general {
-    padding: 3em 2em; }
-    .content.general .body {
-      width: 70%; }
+    padding: 2em 2em; }
     .content.general section {
       margin-top: 2em;
       display: block;
@@ -371,6 +369,8 @@
   /*
    * Content: General
    */
+  .content.general .body {
+    width: 70%; }
   .content.general h1 {
     font-size: 30px;
     font-size: 2rem;

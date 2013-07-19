@@ -1,27 +1,23 @@
 $(function() {
-
-	// This is an initial version and pretty basic needs a lot more testing + cleanup
-	// The Player has been kept pretty basic at this stage (volume for example is on or off)
-	$('video').videoPlayer();
-
+	$('video').quickCastPlayer();
 });
 
 (function($) {
+	$.fn.quickCastPlayer = function(options) {
 
-	$.fn.videoPlayer = function(options) {
-
-		// Handle mobile devices
+		// Add controls to mobile version and then return before quickcast player added
+		// for now on mobile devices we just serve the standard html5 player
 		if (/mobile/i.test(navigator.userAgent)) {
 			$("video").css({ "min-width":"100%","width":"100%","height":"auto"});
 			$("video").attr("controls", true);
 			return;
 		}
-
+		
 		return this.each(function() {
 			if(/chrome/i.test(navigator.userAgent)) {
 				$(this).find("source[type='video/mp4']").remove();
 			}
-			
+
 			$(this)[0].load();
 			
 			$(this)[0].addEventListener('loadeddata', function() {
@@ -49,50 +45,37 @@ $(function() {
 				
 				var $that = $this.parent('.video');
 				
-				// The Structure of our video player
-					$('<div class="play-button"></div>'
-					     + '<div class="player">'
-					     + '<div class="pause-button"></div>'
-					     + '<div class="progress">'
-					       + '<div class="progress-bar">'
-					         + '<div class="button-holder">'
-					           + '<div class="progress-button"> </div>'
-					         + '</div>'
-					       + '</div>'
-					     + '</div>'
-					      + '<div class="time">'
-					         + '<span class="ctime">00:00</span>' 
-					         + '<span class="stime"> / </span>'
-					         + '<span class="ttime">00:00</span>'
-					       + '</div>'
-					     + '<div class="volume">'
-					       + '<div class="volume-holder">'
-					         + '<div class="volume-bar-holder">'
-					           + '<div class="volume-bar">'
-					             + '<div class="volume-button-holder">'	
-					               + '<div class="volume-button"> </div>'
-					             + '</div>'
-					           + '</div>'
-					         + '</div>'
-					       + '</div>'
-					       + '<div class="volume-icon v-change-0">'
-					         + '<span> </span>'
-					       + '</div>'
-					     + '</div>'
-					     + '<div class="fullscreen"> '
-					       + '<a href="#"> </a>'
-					     + '</div>'
-					   + '</div>').appendTo($that);
+				$('<div class="play-button"></div>'
+					+ '<div class="player">'
+					+ '<div class="pause-button"></div>'
+						+ '<div class="progress">'
+							+ '<div class="progress-bar">'
+								+ '<div class="progress-button"> </div>'
+							+ '</div>'
+						+ '</div>'
+						+ '<div class="time">'
+							+ '<span class="ctime">00:00</span>' 
+							+ '<span class="stime"> / </span>'
+							+ '<span class="ttime">00:00</span>'
+						+ '</div>'
+						+ '<div class="volume">'
+							+ '<div class="volume-icon v-change-0">'
+								+ '<span> </span>'
+							+ '</div>'
+						+ '</div>'
+						+ '<div class="fullscreen"> '
+							+ '<a href="#"> </a>'
+						+ '</div>'
+					+ '</div>').appendTo($that);
 
-				// Video information
+				$that.bind('selectstart', function() { return false; });
+
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
 					$volume = $spc.volume, // Video volume
 					$originalTitle = document.title, // Page title (original)
-					currentTime;
-				
-				// Some other misc variables to check when things are happening
-				var $mclicking = false, 
+					currentTime,
+					$mclicking = false, 
 				    $vclicking = false, 
 				    $vidhover = false,
 				    $volhover = false, 
@@ -105,107 +88,71 @@ $(function() {
 				    y = 0, 
 				    vtime = 0, 
 				    updProgWidth = 0, 
-				    volume = 0;
-				    
-				// Setting the width, etc of the player
-				var $volume = $spc.volume;
-				
-				// So the user cant select text in the player
-				$that.bind('selectstart', function() { return false; });
-						
-				// Set some widths
-				var progWidth = $that.find('.progress').width();
+				    volume = 0,
+				    $volume = $spc.volume,
+				    progWidth = $that.find('.progress').width();
 
 				var bufferLength = function() {
-				
-					// The buffered regions of the video
 					var buffered = $spc.buffered;
-					
-					// Rest all buffered regions everytime this function is run
+
 					$that.find('[class^=buffered]').remove();
 					
-					// If buffered regions exist
 					if(buffered.length > 0) {
-						// The length of the buffered regions is i
 						var i = buffered.length;
 							
 						while(i--) {
-							// Max and min buffers
 							$maxBuffer = buffered.end(i);
 							$minBuffer = buffered.start(i);
-									
-							// The offset and width of buffered area				
+												
 							var bufferOffset = ($minBuffer / $duration) * 100;			
 							var bufferWidth = (($maxBuffer - $minBuffer) / $duration) * 100;
-											
-							// Append the buffered regions to the video
+
 							$('<div class="buffered"></div>').css({"left" : bufferOffset+'%', 'width' : bufferWidth+'%'}).appendTo($that.find('.progress'));
 						}
 					}
 				} 
-				
-				// Run the buffer function
+			
 				bufferLength();
 				
-				// The timing function, updates the time.
 				var timeUpdate = function($ignore) {
-					
-					// The current time of the video based on progress bar position
 					var time = Math.round(($('.progress-bar').width() / progWidth) * $duration);
-					
-					// The 'real' time of the video
+
 					var curTime = $spc.currentTime;
 					
-					// Seconds are set to 0 by default, minutes are the time divided by 60
-					// tminutes and tseconds are the total mins and seconds.
 					var seconds = 0,
 						minutes = Math.floor(time / 60),
 						tminutes = Math.round($duration / 60),
 						tseconds = Math.round(($duration) - (tminutes*60));
 					
-					// If time exists (well, video time)
 					if(time) {
-						// seconds are equal to the time minus the minutes
 						seconds = Math.round(time) - (60*minutes);
-						
-						// So if seconds go above 59
 						if(seconds > 59) {
-							// Increase minutes, reset seconds
 							seconds = Math.round(time) - (60*minutes);
 							if(seconds == 60) {
 								minutes = Math.round(time / 60); 
 								seconds = 0;
 							}
 						}
-						
 					} 
-					
-					// Updated progress width
+
 					updProgWidth = (curTime / $duration) * progWidth;
 					
-					// Set a zero before the number if its less than 10.
+					// zero pad
 					if(seconds < 10) { seconds = '0'+seconds; }
 					if(tseconds < 10) { tseconds = '0'+tseconds; }
 					
-					// A variable set which we'll use later on
-					//if($ignore != true) {
-						$that.find('.progress-bar').css({'width' : updProgWidth+'px'});
+					$that.find('.progress-bar').css({'width' : updProgWidth+'px'});
 
-						if ($spc.currentTime > 0)
-							$that.find('.progress-button').css({'left' : (updProgWidth-$that.find('.progress-button').width()-15)+'px'});
-						else
-							$that.find('.progress-button').css({'left' : (updProgWidth-$that.find('.progress-button').width()-5)+'px'});
-					//}
-					
-					// Update times
+					var buttonPos = (updProgWidth-$that.find('.progress-button').width());
+					if (buttonPos < 0) buttonPos = 0;
+					$that.find('.progress-button').css({'left' : buttonPos+'px'});
+
 					$that.find('.ctime').html(minutes+':'+seconds) 
 					$that.find('.ttime').html(tminutes+':'+tseconds);
 				
-					// If playing update buffer value
 					if($spc.currentTime > 0 && $spc.paused == false && $spc.ended == false)
 						bufferLength();
 
-					// Update the page title
 					if ($playing)
 						document.title = 'Playing ' + minutes+':'+seconds + ' / ' + tminutes+':'+tseconds;
 					else if ($spc.currentTime > 0)
@@ -214,13 +161,13 @@ $(function() {
 						document.title = $originalTitle;
 				}
 				
-				// Run the timing function twice, once on init and again when the time updates.
 				timeUpdate();
 
 				$spc.addEventListener('timeupdate', timeUpdate);
 
-				// Window resize to adjust the video
-				$(window).resize(function() {
+				$(window).resize(function(){
+
+					$(".video").css("width","100%");
 
 					if ($spc.currentTime >= $duration)
 						$spc.currentTime = 0;
@@ -231,13 +178,11 @@ $(function() {
 
 					$that.find('.progress-bar').css({'width' : updProgWidth+'px'});
 
-					if ($spc.currentTime > 0)
-						$that.find('.progress-button').css({'left' : (updProgWidth-$that.find('.progress-button').width()-15)+'px'});
-					else
-						$that.find('.progress-button').css({'left' : (updProgWidth-$that.find('.progress-button').width()-5)+'px'});
+					var buttonPos = (updProgWidth-$that.find('.progress-button').width());
+					if (buttonPos < 0) buttonPos = 0;
+					$that.find('.progress-button').css({'left' : buttonPos+'px'});
 
 					bufferLength();
-
 				});
 
 				if ($micro === false){
@@ -245,6 +190,7 @@ $(function() {
 					setTimeout(function() { $that.find('.player').css("opacity", 0); }, 3000);
 				}else{
 					$that.find('.player').css("display", "none");
+					$(".play-button").append("<span></span>");
 					var sizePlay = ($video_width / 1.4);
 
 					if ($video_width > $video_height)
@@ -252,25 +198,21 @@ $(function() {
 
 					$(".play-button span").css("margin", "-" + parseInt(sizePlay/2) + "px 0 0 -" + parseInt(sizePlay/2) +"px");
 					$(".play-button span").css({"width": parseInt(sizePlay) + "px", "height": parseInt(sizePlay) + "px"});
-					//var timedPlay = setTimeout(function() { $spc.play(); }, 3000);
 				}
 
-				// When the user clicks play, bind a click event	
-				$that.find('.play-button, .pause-button').on('click', function() {
-					
-					// Set up a playing variable
-					if($spc.currentTime > 0 && $spc.paused == false && $spc.ended == false) {
+				$that.find('.play-button, .pause-button').on('click', function(){
+
+					if($spc.currentTime > 0 && $spc.paused == false && $spc.ended == false){
 						$playing = false;
-					} else { 
+					}else{ 
 						$playing = true; 
 					}
 					
-					// If playing, etc, change classes to show pause or play button
-					if($playing == false) {
+					if($playing == false){
 						$('.play-button, .pause-button').removeClass("playing");
 						$spc.pause();
 						bufferLength();
-					} else {
+					}else{
 						$('.play-button, .pause-button').addClass("playing");
 						$begin = true;
 						$spc.play();
@@ -278,133 +220,102 @@ $(function() {
 					
 				});
 				
-				// Bind a function to the progress bar so the user can select a point in the video
-				$that.find('.progress').bind('mousedown', function(e) {
-					// Progress bar is being clicked
+				$that.find('.progress').on('mousedown', function(e) {
 					$mclicking = true;
 					
-					// If video is playing then pause while we change time of the video
-					if($playing == true) {
+					if($playing == true)
 						$spc.pause();
-					}
 					
-					// The x position of the mouse in the progress bar 
 					x = e.pageX - $that.find('.progress').offset().left;
-					
-					// Update current time
+
 					currentTime = (x / progWidth) * $duration;
 					
 					$spc.currentTime = currentTime;
 				});
 				
-				// For usability purposes then bind a function to the body assuming that the user has clicked mouse
-				// down on the progress bar or volume bar
-				$('body, html').bind('mousemove', function(e) {
+				$('body, html').on('mousemove', function(e){
+					
+					var playerTimerHideShow = null;
 
-					//if($begin == true) {
-						if ($micro != true){
-							$that.hover(function() {
-								$that.find('.player').css("opacity", 1);
-							}, function() {
-								$that.find('.player').css("opacity", 0);
-							});
-						}
-					//}
+					if ($micro != true){
+						$that.on("mouseover", function(){ 
+							clearTimeout(playerTimerHideShow);
+							$that.find('.player').css("opacity", 1);
+						});
 
-					// For the progress bar controls
+						$that.on("mouseout", function(){
+							playerTimerHideShow = setTimeout(function() { $that.find('.player').css("opacity", 0); }, 1000);
+						});
+					}
+
 					if($mclicking == true) {	
-						
-						// Dragging is happening
+					
 						$draggingProgress = true;
-						// The thing we're going to apply to the CSS (changes based on conditional statements);
+
 						var progMove = 0;
-						// Width of the progress button (a little button at the end of the progress bar)
+
 						var buttonWidth = $that.find('.progress-button').width();
 						
-						// Updated x posititon the user is at
 						x = e.pageX - $that.find('.progress').offset().left;
 						
-						if(x-15 < 0) { // If x is less than 0 then move the progress bar 0px
+						if(x < 0){
 							progMove = 0;
 							$spc.currentTime = 0;
 						} 
-						else if(x > progWidth) { // If x is more than the progress bar width then set progMove to progWidth
+						else if(x > progWidth){
 							$spc.currentTime = $duration;
 							progMove = progWidth;	
-						}
-						else { // Otherwise progMove is equal to the mouse x coordinate
+						}else{
 							progMove = x;
 							currentTime = (x / progWidth) * $duration;
 							$spc.currentTime = currentTime;	
 						}
 						
-						// Change CSS based on previous conditional statement
-						$that.find('.progress-bar').css({'width' : progMove+'px'});
 
-						if ($spc.currentTime > 0)
-							$that.find('.progress-button').css({'left' : (progMove-buttonWidth-15)+'px'});
-						else
-							$that.find('.progress-button').css({'left' : (progMove-buttonWidth-5)+'px'});
+						$that.find('.progress-bar').css({'width' : progMove+'px'});
+						var buttonPos = (updProgWidth-$that.find('.progress-button').width());
+						if (buttonPos < 0) buttonPos = 0;
+						$that.find('.progress-button').css({'left' : buttonPos+'px'});
 					}	
 				});
 				
 				// When the video ends the play button becomes a pause button
 				$spc.addEventListener('ended', function() {	
 					$playing = false;
-					// If the user is not dragging
-					if($draggingProgress == false) {
+					if($draggingProgress == false) 
 						$('.play-button, .pause-button').removeClass("playing");
-					}
 				});
 				
-				// If the user clicks on the volume icon, mute the video, store previous volume, and then
-				// show previous volume should they click on it again.
-				$that.find('.volume').bind('mousedown', function() {					
-					$volume = $spc.volume; // Update volume
+				$that.find('.volume').on('mousedown', function() {					
+					$volume = $spc.volume;
 					
-					// If volume is undefined then the store volume is the current volume
-					if(typeof $storevol == 'undefined') {
-						 $storevol = $spc.volume;
-					}
-					
-					// If volume is more than 0
-					if($volume > 0) {
-						// then the user wants to mute the video, so volume will become 0
+					if($volume > 0){
 						$spc.volume = 0; 
 						$volume = 0;
-						$that.find('.volume-bar').css({'height' : '0'});
 						$that.find('.volume').addClass("off");
-					}
-					else {
-						// Otherwise user is unmuting video, so volume is now store volume.
+					}else{
 						$spc.volume = $storevol;
 						$volume = $storevol;
-						$that.find('.volume-bar').css({'height' : ($storevol*100)+'%'});
 						$that.find('.volume').removeClass("off");
 					}
 				});
 				
-				// If the user lets go of the mouse, clicking is false for both volume and progress.
-				// Also the video will begin playing if it was playing before the drag process began.
-				// We're also running the bufferLength function
-				$('body, html').bind('mouseup', function(e) {
+				
+				$('body, html').on('mouseup', function(e) {
 					$mclicking = false;
 					$vclicking = false;
 					$draggingProgress = false;
 					
-					if($playing == true) {	
+					if($playing == true)
 						$spc.play();
-					}
 					
 					bufferLength();
 				});
 				
-				// Check if fullscreen supported. If it's not just don't show the fullscreen icon.
 				if(!$spc.requestFullscreen && !$spc.mozRequestFullScreen && !$spc.webkitRequestFullScreen) {
 					$('.fullscreen').hide();
 				}
 				
-				// Requests fullscreen based on browser.
 				$('.fullscreen').on("click", function() {
 				
 					if ($spc.requestFullscreen) {
