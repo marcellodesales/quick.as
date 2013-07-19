@@ -91,25 +91,21 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 
 				var $spc = $(this)[0], // Specific video
 					$duration = $spc.duration, // Video Duration
-					$volume = $spc.volume, // Video volume
 					$originalTitle = document.title, // Page title (original)
 					currentTime,
-					$mclicking = false, 
-				    $vclicking = false, 
-				    $vidhover = false,
-				    $volhover = false, 
-				    $playing = false, 
-				    $drop = false,
-				    $begin = false,
-				    $draggingProgess = false,
-				    $storevol,	
-				    x = 0, 
-				    y = 0, 
-				    vtime = 0, 
-				    updProgWidth = 0, 
-				    volume = 0,
-				    $volume = $spc.volume,
-				    progWidth = $that.find('.progress').width();
+					$mclicking = false,
+					$vclicking = false,
+					$vidhover = false,
+					$volhover = false, 
+					$playing = false,
+					$drop = false,
+					$begin = false,
+					$draggingProgess = false,
+					x = 0,
+					y = 0,
+					vtime = 0,
+					updProgWidth = 0,
+					progWidth = $that.find('.progress').width();
 
 				var bufferLength = function() {
 					var buffered = $spc.buffered;
@@ -327,16 +323,13 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 					}
 				});
 				
-				$that.find('.volume').on('mousedown', function() {					
-					$volume = $spc.volume;
-					
-					if($volume > 0){
-						$spc.volume = 0; 
-						$volume = 0;
+				$that.find('.volume').on('click', function() {
+					alert($spc.volume)
+					if($spc.volume == 1){
+						$spc.volume = 0;
 						$that.find('.volume').addClass("off");
 					}else{
-						$spc.volume = $storevol;
-						$volume = $storevol;
+						$spc.volume = 1;
 						$that.find('.volume').removeClass("off");
 					}
 				});
