@@ -302,11 +302,10 @@ $(function() {
 									$(".play-button").append("<div><span></span></div>");
 							$(".play-button div span").text($video_outro);
 							$(".play-button div").show();
-							$('.play-button, .pause-button').removeClass("playing");
 						}
-					}else{
-						$('.play-button, .pause-button').removeClass("playing");
 					}
+						
+					$('.play-button, .pause-button').removeClass("playing");
 				});
 				
 				$that.find('.volume').on('click', function() {
