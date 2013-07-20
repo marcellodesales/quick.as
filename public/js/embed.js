@@ -16,7 +16,7 @@ $(function() {
 		return this.each(function() {
 			if(/chrome/i.test(navigator.userAgent)) {
 				var obj = $(this).find("source[type='video/webm']");
-				$(this).html(obj);
+				$(this).html("").append(obj);
 			}
 
 			$(this)[0].load();
