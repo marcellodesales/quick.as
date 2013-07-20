@@ -33,7 +33,8 @@ e[n].height=t/1.6+'px'}}e(),window.onresize=e}()</script></textarea>");
 		
 		return this.each(function() {
 			if(/chrome/i.test(navigator.userAgent)) {
-				$(this).find("source[type='video/mp4']").remove();
+				var obj = $(this).find("source[type='video/webm']");
+				$(this).html(obj);
 			}
 
 			$(this)[0].load();

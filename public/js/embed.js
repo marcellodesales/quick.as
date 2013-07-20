@@ -15,7 +15,8 @@ $(function() {
 		
 		return this.each(function() {
 			if(/chrome/i.test(navigator.userAgent)) {
-				$(this).find("source[type='video/mp4']").remove();
+				var obj = $(this).find("source[type='video/webm']");
+				$(this).html(obj);
 			}
 
 			$(this)[0].load();
