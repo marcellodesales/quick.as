@@ -150,7 +150,7 @@ exports.userCasts = function(req, res){
 		var client = new pg.Client(postgres);
 		client.connect();
 		
-		client.query("SELECT * FROM casts WHERE ownerid = $1 ORDER BY created DESC LIMIT 10", [result.user.userid], function(e, casts){
+		client.query("SELECT * FROM casts WHERE ownerid = $1 AND published = true ORDER BY created DESC LIMIT 10", [result.user.userid], function(e, casts){
 			client.end();
 			if (e) {
 				res.json(e, 400);
