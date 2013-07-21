@@ -121,7 +121,7 @@ $(function() {
 					
 					var seconds = 0,
 						minutes = Math.floor(time / 60),
-						tminutes = Math.round($duration / 60),
+						tminutes = Math.floor($duration / 60),
 						tseconds = Math.round(($duration) - (tminutes*60));
 					
 					if(time) {
