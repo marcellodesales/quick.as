@@ -375,6 +375,7 @@ n[e].height=t/1.6+'px'}}n(),window.onresize=n,window.addEventListener('message',
 
 				$('.link').on("click", function() {
 					window.location.href = window.location.href;
+					return false;
 				});
 				
 			});

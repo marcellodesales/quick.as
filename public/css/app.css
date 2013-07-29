@@ -1319,7 +1319,8 @@ h1 span {
   left: 9.25em;
   height: 30px;
   width: 30px;
-  top: .7em; }
+  top: .7em;
+  display: none; }
 
 .player .link a {
   -webkit-border-radius: 100%;
