@@ -355,7 +355,8 @@ $(function() {
 				});
 
 				$('.link').on("click", function() {
-					window.parent.postMessage(window.location.href, window.parent.location.origin);			
+					window.parent.postMessage(window.location.href, '*');
+					return false;			
 				});
 				
 			});
