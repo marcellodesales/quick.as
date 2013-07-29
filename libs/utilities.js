@@ -5,6 +5,10 @@ var bcrypt = require('bcrypt'),
     postgres = config.postgres.connection,
     redis = require('redis');
 
+exports.getPostmark = function(){
+  return config.postmark;
+}
+
 exports.getSecret = function(){
   return config.bcrypt.secret;
 }

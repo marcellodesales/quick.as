@@ -55,6 +55,7 @@ app.get('/api/v1/casts', casts.index);
 app.put('/api/v1/casts/publish', casts.publish);
 app.put('/api/v1/casts/publish/complete', casts.publishComplete); // change to post
 app.put('/api/v1/casts/publish/update', casts.publishUpdate); // change to post
+//app.get('/api/v1/casts/confirm-cast/:hash', casts.confirmCast);
 
 //app.get('/api/v1/casts/setup', casts.setup); // Setup
 //app.get('/api/v1/casts/update-functions', casts.updateFunctions); // Setup functions

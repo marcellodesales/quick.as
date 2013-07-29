@@ -199,6 +199,59 @@ exports.publishUpdate = function(req, res) {
 	});
 };
 
+/*exports.confirmCast = function(req, res) {
+	var hash = req.params.hash,
+		client = new pg.Client(postgres);
+
+	if (hash === undefined) {
+		res.json({ status: 400, message: "Invalid castid" }, 400); 
+		return;
+	}
+
+	client.connect();
+
+	client.query("SELECT * FROM casts WHERE uniqueid = $1 AND published = false", [hash], function(err, result){
+		if (result.rowCount > 0){
+
+			var fileCheck = '/%s/%s/quickcast.%s';
+			var amazonDetails = utilities.getAmazonDetails();
+			var s3 = require('aws2js').load('s3', amazonDetails.accessKeyId, amazonDetails.secretAccessKey)
+
+			s3.setBucket(amazonDetails.destinationBucket);
+
+			s3.head(util.format(fileCheck, result.ownerid, result.castid, 'webm'), function (err3, s3res) {
+
+				if (err3 && err3.code != 200){
+					client.end();
+					res.json(false); 
+				}else{
+					client.query("UPDATE casts SET published = true WHERE uniqueid = $1;SELECT email FROM users WHERE userid = $2;", [hash,result.ownerid])
+						.on('end', function(r) {
+							client.end();
+
+							var postmark = require("postmark")(utilities.getPostmark().apiKey);
+
+							postmark.send({
+								"From": utilities.getPostmark().from, 
+								"To": r, 
+								"Subject": "Your QuickCast has been uploaded successfully!", 
+								"TextBody": "It can take a few seconds to encode your QuicCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash
+							});
+
+							res.json(true);
+						});
+				}
+
+			});
+
+		}else{
+			client.end();
+			res.json(true); 
+		}
+	});
+
+};*/
+
 exports.publishComplete = function(req, res) {
 	if (req.headers.castid === undefined) {
 		res.json({ status: 400, message: "Invalid castid" }, 400); 
@@ -268,9 +321,19 @@ exports.publishComplete = function(req, res) {
 				var hashids = new Hashids("quickyo"),
     				hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
 
-				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
+				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6;SELECT * FROM casts WHERE castid = $6;", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
 					.on('end', function(r) {
 						client.end();
+
+						var postmark = require("postmark")(utilities.getPostmark().apiKey);
+
+						postmark.send({
+							"From": utilities.getPostmark().from, 
+							"To": result.user.email, 
+							"Subject": "QuickCast: " + r.name, 
+							"TextBody": "Hi " + result.user.firstname + ",\n\nYour QuickCast has been published successfully!\n\nIt can take a few seconds to encode your QuicCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash + "\n\nThanks for using QuickCast"
+						});
+
 						res.json({ status: 200, message: "Successfully published", url: "http://quick.as/" + hash }, 200);
 					});
 			});
