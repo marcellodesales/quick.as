@@ -99,8 +99,8 @@ SELECT tagid \
 FROM tags \
 WHERE name = tag); \
 INSERT INTO casts_tags(castid, tagid) \
-SELECT currval('casts_castid_seq'::regclass), A.tagid FROM tags A WHERE A.name = ANY (string_to_array($6, ',')); \
-RETURN currval('casts_castid_seq'::regclass); \
+SELECT $5, A.tagid FROM tags A WHERE A.name = ANY (string_to_array($6, ',')); \
+RETURN $5; \
 END; \
 $$ language plpgsql;";
 
