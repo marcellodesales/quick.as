@@ -67,7 +67,10 @@ $(function() {
 								+ '<span> </span>'
 							+ '</div>'
 						+ '</div>'
-						+ '<div class="fullscreen"> '
+						+ '<div class="fullscreen">'
+							+ '<a href="#"> </a>'
+						+ '</div>'
+						+ '<div class="link">'
 							+ '<a href="#"> </a>'
 						+ '</div>'
 					+ '</div>').appendTo($that);
@@ -349,6 +352,10 @@ $(function() {
 						$spc.webkitRequestFullScreen();
 					}
 				
+				});
+
+				$('.link').on("click", function() {
+					window.parent.postMessage(window.location.href, window.parent.location.origin);			
 				});
 				
 			});

@@ -557,9 +557,9 @@ video {
   height: 100%;
   z-index: 1; }
 
-.player .pause-button, .player .pause-button.playing, .player .volume, .player .volume.off, .player .fullscreen a {
+.player .pause-button, .player .pause-button.playing, .player .volume, .player .volume.off, .player .fullscreen a, .player .link a {
   background-image: url("../img/video-sprite.png");
-  background-size: 170px 30px; }
+  background-size: 204px 30px; }
 
 .player .pause-button {
   -webkit-border-radius: 100%;
@@ -640,4 +640,26 @@ video {
   display: block;
   background-position: -140px 0; }
   .player .fullscreen a:hover {
+    background-color: #555; }
+
+.player .link {
+  cursor: pointer;
+  position: absolute;
+  left: 9.25em;
+  height: 30px;
+  width: 30px;
+  top: .7em; }
+
+.player .link a {
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -ms-border-radius: 100%;
+  -o-border-radius: 100%;
+  border-radius: 100%;
+  background-color: #666;
+  width: 30px;
+  height: 30px;
+  display: block;
+  background-position: -174px 0; }
+  .player .link a:hover {
     background-color: #555; }
