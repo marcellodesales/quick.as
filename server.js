@@ -53,11 +53,11 @@ app.get('/api/v1/users/usercasts', users.userCasts);
 // Casts
 app.get('/api/v1/casts', casts.index);
 app.put('/api/v1/casts/publish', casts.publish);
-app.put('/api/v1/casts/publish/complete', casts.publishComplete);
-app.put('/api/v1/casts/publish/update', casts.publishUpdate);
+app.put('/api/v1/casts/publish/complete', casts.publishComplete); // change to post
+app.put('/api/v1/casts/publish/update', casts.publishUpdate); // change to post
 
 //app.get('/api/v1/casts/setup', casts.setup); // Setup
-app.get('/api/v1/casts/update-functions', casts.updateFunctions); // Setup functions
+//app.get('/api/v1/casts/update-functions', casts.updateFunctions); // Setup functions
 
 /* Site Video */
 
