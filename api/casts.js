@@ -9,6 +9,40 @@ var jwt = require('jwt-simple'),
 
 AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
 
+exports.updateFunctions = function(req, res) {
+	var client = new pg.Client(postgres);
+	client.connect();
+
+	var createUpdateCastFunction = function(fn) {
+		// Expects: Description, Name, Intro, Outro, CastId, Tags (comma separated)
+		var addCast = "CREATE OR REPLACE FUNCTION UpdateCast(text, varchar, varchar, varchar, int, text) RETURNS INTEGER AS $$ \
+BEGIN \
+UPDATE casts SET description = $1, name = $2, intro = $3, outro = $4 WHERE castid = $5; \
+INSERT INTO tags (name) \
+SELECT tag \
+FROM unnest(string_to_array($6, ',')) AS dt(tag) \
+WHERE NOT EXISTS ( \
+SELECT tagid \
+FROM tags \
+WHERE name = tag); \
+INSERT INTO casts_tags(castid, tagid) \
+SELECT currval('casts_castid_seq'::regclass), A.tagid FROM tags A WHERE A.name = ANY (string_to_array($6, ',')); \
+RETURN currval('casts_castid_seq'::regclass); \
+END; \
+$$ language plpgsql;";
+
+		client.query(addCast)
+			.on('end', function(r){
+				return fn && fn(null, r);
+			});
+	};
+
+	createUpdateCastFunction(function (err, result){
+		client.end();
+		res.json({ "complete": true }, 200);
+	});
+};
+
 exports.setup = function(req, res) {
 	var client = new pg.Client(postgres);
 	client.connect();
@@ -27,7 +61,7 @@ exports.setup = function(req, res) {
 			});
 	};
 
-	var createFunctions = function(fn) {
+	var createAddCastFunction = function(fn) {
 		// Expects: OwnerId, DateTime, Description, Name, Intro, Outro, Tags (comma separated)
 		var addCast = "CREATE OR REPLACE FUNCTION AddCast(int, timestamp, text, varchar, varchar, varchar, text) RETURNS INTEGER AS $$ \
 BEGIN \
@@ -52,11 +86,37 @@ $$ language plpgsql;";
 			});
 	};
 
+	var createUpdateCastFunction = function(fn) {
+		// Expects: CastId, Description, Name, Intro, Outro, Tags (comma separated)
+		var addCast = "CREATE OR REPLACE FUNCTION UpdateCast(text, varchar, varchar, varchar, int, text) RETURNS INTEGER AS $$ \
+BEGIN \
+UPDATE casts SET description = $1, name = $2, intro = $3, outro = $4 WHERE castid = $5; \
+INSERT INTO tags (name) \
+SELECT tag \
+FROM unnest(string_to_array($6, ',')) AS dt(tag) \
+WHERE NOT EXISTS ( \
+SELECT tagid \
+FROM tags \
+WHERE name = tag); \
+INSERT INTO casts_tags(castid, tagid) \
+SELECT currval('casts_castid_seq'::regclass), A.tagid FROM tags A WHERE A.name = ANY (string_to_array($6, ',')); \
+RETURN currval('casts_castid_seq'::regclass); \
+END; \
+$$ language plpgsql;";
+
+		client.query(addCast)
+			.on('end', function(r){
+				return fn && fn(null, r);
+			});
+	};
+
 	dropTables(function (err, result){
 		createTables(function (err, result){
-			createFunctions(function (err, result){
-				client.end();
-				res.json({ "complete": true }, 200);
+			createAddCastFunction(function (err, result){
+				createUpdateCastFunction(function (err, result){
+					client.end();
+					res.json({ "complete": true }, 200);
+				});
 			});
 		});
 	});
@@ -105,6 +165,37 @@ exports.publish = function(req, res) {
 					res.json(response);
 				});			
 		});
+	});
+};
+
+exports.publishUpdate = function(req, res) {
+	utilities.validateToken(req, function(err, result){
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
+
+		var client = new pg.Client(postgres);
+
+		client.connect();
+
+		var response = {};
+
+		var cleanTags = [];
+		var tags = req.body.tags.split(',');
+
+		for(var tag in tags){
+			cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
+		}
+
+		client.query("SELECT UpdateCast($1,$2,$3,$4,$5,$6);", [req.body.description, req.body.name, req.body.intro, req.body.outro, req.body.castid, cleanTags.join(",")])
+			.on('row', function(r){
+				response["cast"] = r;
+			})
+			.on('end', function(r){
+				client.end();
+				res.json(response);
+			});
 	});
 };
 
@@ -188,9 +279,7 @@ exports.publishComplete = function(req, res) {
 };
 
 exports.index = function(req, res) {
-
 	res.render('api/casts/index', {
 		title: 'API'
 	});
-
 };
