@@ -321,7 +321,7 @@ exports.publishComplete = function(req, res) {
 				var hashids = new Hashids("quickyo"),
     				hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
 
-				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6;SELECT * FROM casts WHERE castid = $6;", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
+				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
 					.on('end', function(r) {
 						client.end();
 
@@ -330,7 +330,7 @@ exports.publishComplete = function(req, res) {
 						postmark.send({
 							"From": utilities.getPostmark().from, 
 							"To": result.user.email, 
-							"Subject": "QuickCast: " + r.name, 
+							"Subject": "QuickCast Successfully Uploaded", 
 							"TextBody": "Hi " + result.user.firstname + ",\n\nYour QuickCast has been published successfully!\n\nIt can take a few seconds to encode your QuicCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash + "\n\nThanks for using QuickCast"
 						});
 
