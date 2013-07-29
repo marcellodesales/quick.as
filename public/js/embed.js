@@ -355,7 +355,7 @@ $(function() {
 				});
 
 				$('.link').on("click", function() {
-					window.parent.postMessage(window.location.href, '*');
+					window.parent.postMessage(window.location.href.replace('/embed/','/'), '*');
 					return false;			
 				});
 				
