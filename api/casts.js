@@ -331,7 +331,7 @@ exports.publishComplete = function(req, res) {
 							"From": utilities.getPostmark().from, 
 							"To": result.user.email, 
 							"Subject": "QuickCast Successfully Uploaded", 
-							"TextBody": "Hi " + result.user.firstname + ",\n\nYour QuickCast has been published successfully!\n\nIt can take a few seconds to encode your QuicCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash + "\n\nThanks for using QuickCast"
+							"TextBody": "Hi " + result.user.firstname + ",\n\nYour QuickCast has been published successfully!\n\nIt can take a few seconds to encode your QuickCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash + "\n\nThanks for using QuickCast"
 						});
 
 						res.json({ status: 200, message: "Successfully published", url: "http://quick.as/" + hash }, 200);
