@@ -3,7 +3,7 @@ var request = require('supertest');
 var assert  = require('assert');
 var should  = require('should');
 
-describe('Put /api/v1/casts/publish', function(){
+/*describe('Put /api/v1/casts/publish', function(){
     it('should respond 200 json',function(done){
         request(app)
         .put('/api/v1/casts/publish')
@@ -45,7 +45,7 @@ describe('Post /api/v1/casts/publish/update', function(){
     });
 });
 
-/*describe('Put /api/v1/casts/publish/complete', function(){
+describe('Put /api/v1/casts/publish/complete', function(){
     it('should respond 200 json',function(done){
         request(app)
         .put('/api/v1/casts/publish/complete')

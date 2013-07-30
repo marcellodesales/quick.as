@@ -1,3 +1,6 @@
+// this is currently a bit of a dumping ground for functions
+// some of these could be re-thought and moved - some should be written as middleware
+
 var bcrypt = require('bcrypt'), 
     jwt = require('jwt-simple'),
     pg = require('pg'), 
@@ -5,40 +8,39 @@ var bcrypt = require('bcrypt'),
     postgres = config.postgres.connection,
     redis = require('redis');
 
+// returns the postmark config
 exports.getPostmark = function(){
   return config.postmark;
 }
 
+// returns the bcrypt secret
 exports.getSecret = function(){
   return config.bcrypt.secret;
 }
 
+// returns the amazon config
 exports.getAmazonDetails = function(){
   return config.amazon;
 }
 
+// returns the postgres connection
 exports.getDBConnection = function(){
    return config.postgres.connection;
 }
 
+// returns the redis config
 exports.getRedisConfig = function(){
-  //var redisUrl = config.redis.url.split(':');
-  //var redisConfig = { host: redisUrl[0], port: redisUrl[1], password: config.redis.password };
-
   var rtg   = require("url").parse(config.redis.url);
-  //var redis = require("redis").createClient(rtg.port, rtg.hostname);
-
-  //redis.auth(rtg.auth.split(":")[1]);
-
   var redisConfig = { host: rtg.hostname, port: rtg.port, password: config.redis.password };
-
   return redisConfig;
 }
 
+// returns an encoded token
 exports.encodeToken = function(payload){
   return jwt.encode(payload, this.getSecret());
 }
 
+// returns an encrypted password
 exports.cryptPassword = function(password, callback){
   bcrypt.genSalt(10, function(err, salt){
     if (err) return callback(err);
@@ -50,6 +52,7 @@ exports.cryptPassword = function(password, callback){
   });
 };
 
+// compares an encrypted password
 exports.comparePassword = function(password, userPassword, callback){
   bcrypt.compare(password, userPassword, function(err, isPasswordMatch){
     if (err) return callback(err);
@@ -57,11 +60,13 @@ exports.comparePassword = function(password, userPassword, callback){
   });
 };
 
+// validates an email
 exports.validateEmail = function(email){
   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(email);
 };
 
+// valiates a standard field
 exports.validateField = function(str){
   if (str === "" || str === null || str === undefined)
     return false;
@@ -69,6 +74,8 @@ exports.validateField = function(str){
     return true;
 };
 
+// validates the app token - could be better as middleware
+// should consider adding a date to the token and expiring based on this also
 exports.validateToken = function(req, callback){
   var token = req.headers.token,
       client = new pg.Client(postgres),
@@ -100,7 +107,16 @@ exports.validateToken = function(req, callback){
   });
 };
 
-// This needs more thought and time - possible race condition
+// Log views - initially to redis and then persisted to postgres
+// Benefits of approach
+// - it's fast
+// - reduces database writes (postgres)
+// - stops the same user / ip logging on refresh
+// This is currently not a great implementation
+// - potential for race condition
+// - relies on subsequent visits and limits to persist from redis to postgres
+// Better approach would be if redis - postgres was handled automaticallu through invalidation or cron job
+// potentiallty: https://github.com/ncb000gt/node-cron
 exports.logViews = function(video_entry, req, callback){
   var redisConfig = this.getRedisConfig(),
       client = redis.createClient(redisConfig.port, redisConfig.host)
@@ -119,7 +135,8 @@ exports.logViews = function(video_entry, req, callback){
   });
 
   client.get(video_entry, function(err, reply) {
-    if (reply === "20"){
+    // if 10 logs already then persist them to postgres
+    if (reply === "10"){
       client.del(video_entry);
       client.keys(video_entry + "_*", function(err,replies) {
         client.del(replies);

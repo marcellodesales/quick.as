@@ -4,6 +4,7 @@ var jwt = require('jwt-simple'),
 	postgres = utilities.getDBConnection(),
 	Q = require('q');
 
+// Simply a setup controller - drops and recreated all tables and functions in postgres
 exports.setup = function(req, res) {
 	var client = new pg.Client(postgres);
 	client.connect();
@@ -15,6 +16,7 @@ exports.setup = function(req, res) {
 		});
 };
 
+// handles the user signup
 exports.signup = function(req, res){
 
 	var client = new pg.Client(postgres),
@@ -26,6 +28,7 @@ exports.signup = function(req, res){
 		mailinglist = req.headers.mailinglist === undefined ? false : req.headers.mailinglist,
 		errors = [];
 
+	// really basic validation - could be better
 	function validate(){
 		if (!utilities.validateField(firstname))
 			errors.push( { name: "firstname", message: "Firstname is required" } );
@@ -46,6 +49,7 @@ exports.signup = function(req, res){
 
 	client.connect();
 
+	// validate the email doesn't already exist within postgres
 	function emailExists(){
 		var deferred = Q.defer();
 		client.query("SELECT email FROM users WHERE email = $1", [email], function(err, result){
@@ -59,6 +63,7 @@ exports.signup = function(req, res){
 		return deferred.promise;
 	}
 
+	// validate the username doesn't already exist within postgres
 	function usernameExists(){
 		var deferred = Q.defer();
 		client.query("SELECT username FROM users WHERE username = $1", [username], function(err, result){
@@ -72,6 +77,7 @@ exports.signup = function(req, res){
 		return deferred.promise;
 	}
 
+	// rather than nest, we defer all of the calls before we insert the new user
 	Q.fcall(validate)
 		.then(emailExists)
 		.then(usernameExists)
@@ -92,6 +98,7 @@ exports.signup = function(req, res){
 		.done();
 };
 
+// handles the user signin
 exports.signin = function(req, res){
 	var client = new pg.Client(postgres),
 		username = req.headers.username,
@@ -105,6 +112,7 @@ exports.signin = function(req, res){
 
 	client.connect();
 
+	// query postgres
 	client.query("SELECT * FROM users WHERE username = $1", [username], function(err, result){
 		client.end();
 		if (err) {
@@ -116,6 +124,8 @@ exports.signin = function(req, res){
 		  res.json(error, 401);
 		else{
 			var row = result.rows[0];
+
+			// compare the encrypted password
 			utilities.comparePassword(password, row.password, function(err, match){
 				if (match)
 				{
@@ -129,6 +139,7 @@ exports.signin = function(req, res){
 	});
 };
 
+// handles the token validation by the app
 exports.userByToken = function(req, res){
 	utilities.validateToken(req, function(err, result){
 		if (err) {
@@ -140,6 +151,7 @@ exports.userByToken = function(req, res){
 	});
 };
 
+// returns a list (top 10) of users casts
 exports.userCasts = function(req, res){
 	utilities.validateToken(req, function(err, result){
 		if (err) {
@@ -165,6 +177,7 @@ exports.userCasts = function(req, res){
 	});
 };
 
+// Users API index page
 exports.index = function(req, res){
 	res.render('api/users/index', {
 		title: 'API'

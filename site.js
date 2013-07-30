@@ -5,6 +5,7 @@ var utilities = require('./libs/utilities'),
     moment = require('moment'),
     util = require('util');
 
+// Marked (markdown) settings
 markedOpts = {
 	gfm: true,
 	highlight: function (code, lang, callback) {
@@ -21,16 +22,19 @@ markedOpts = {
 	langPrefix: 'lang-'
 }
 
+// Root url - simply redirect to quickcast.io
 exports.root = function(req, res) {
 	res.redirect("http://quickcast.io");
 };
 
+// quick.as video
 exports.video = function(req, res) {
 	var video_entry = req.params.entry,
 		client = new pg.Client(postgres);
 
     client.connect();
 
+    // get the cast
     client.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE lower(casts.uniqueid) = $1 AND casts.published = true", [video_entry.toLowerCase()], function(err1, result1){
     
     	if (err1) {
@@ -48,6 +52,7 @@ exports.video = function(req, res) {
 			return;
 		}
 
+		// get any tags
 		client.query("SELECT tags.name FROM casts_tags INNER JOIN tags ON (casts_tags.tagid = tags.tagid) WHERE casts_tags.castid = $1", [data.castid], function(err2, result2){
 				
 			client.end();
@@ -58,6 +63,7 @@ exports.video = function(req, res) {
 				tags = result2.rows;
 			}
 
+			// log the views
 			utilities.logViews(video_entry, req, function(err3, r) {
 				marked(data.description, markedOpts, function (err4, content) {
 					if (err4) {
@@ -78,6 +84,9 @@ exports.video = function(req, res) {
 
 					s3.setBucket(amazonDetails.destinationBucket);
 
+					// Check that the last video to be encoded exists (in this case webm)
+					// should consider handling this in the app flow and this would
+					// negate the need for this check here
 					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err5, s3res) {
 
 						var processed = null;
@@ -115,6 +124,7 @@ exports.video = function(req, res) {
 	});
 };
 
+// quick.as video emned (see above) - not logging views
 exports.embed = function(req, res) {
 	var video_entry = req.params.entry,
 		client = new pg.Client(postgres);

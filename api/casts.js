@@ -9,40 +9,7 @@ var jwt = require('jwt-simple'),
 
 AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
 
-exports.updateFunctions = function(req, res) {
-	var client = new pg.Client(postgres);
-	client.connect();
-
-	var createUpdateCastFunction = function(fn) {
-		// Expects: Description, Name, Intro, Outro, CastId, Tags (comma separated)
-		var addCast = "CREATE OR REPLACE FUNCTION UpdateCast(text, varchar, varchar, varchar, int, text) RETURNS INTEGER AS $$ \
-BEGIN \
-UPDATE casts SET description = $1, name = $2, intro = $3, outro = $4 WHERE castid = $5; \
-INSERT INTO tags (name) \
-SELECT tag \
-FROM unnest(string_to_array($6, ',')) AS dt(tag) \
-WHERE NOT EXISTS ( \
-SELECT tagid \
-FROM tags \
-WHERE name = tag); \
-INSERT INTO casts_tags(castid, tagid) \
-SELECT $5, A.tagid FROM tags A WHERE A.name = ANY (string_to_array($6, ',')); \
-RETURN $5; \
-END; \
-$$ language plpgsql;";
-
-		client.query(addCast)
-			.on('end', function(r){
-				return fn && fn(null, r);
-			});
-	};
-
-	createUpdateCastFunction(function (err, result){
-		client.end();
-		res.json({ "complete": true }, 200);
-	});
-};
-
+// Simply a setup controller - drops and recreated all tables and functions in postgres
 exports.setup = function(req, res) {
 	var client = new pg.Client(postgres);
 	client.connect();
@@ -122,7 +89,11 @@ $$ language plpgsql;";
 	});
 };
 
+// Publish, called as soon as the user confirms they wish to publish their quickcast
+// Expects a valid user token and responds with a castid and a temporary 
+// amazon s3 token allowing the app to begin uploading the raw mp4
 exports.publish = function(req, res) {
+	// Validate user token - this could be middleware
 	utilities.validateToken(req, function(err, result){
 		if (err) {
 			res.json({ status: 401, message: err }, 401);
@@ -134,6 +105,7 @@ exports.publish = function(req, res) {
 
 		var params = { 'Name' : 'Temporary', 'Policy' : '{"Statement": [{"Effect": "Allow","Action": "s3:*","Resource": "*"}]}', 'DurationSeconds' : 1200 };
 
+		// Get a temp amazon s3 token
 		sts.client.getFederationToken(params, function(err, data){
 			if (err) {
 				res.json({ status: 500, message: err, amazon: amazonDetails }, 500);
@@ -156,6 +128,8 @@ exports.publish = function(req, res) {
 				cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
 			}
 
+			// Add any details to the cast table and get an id, this postgres function
+			// handles normalisation of tags, etc
 			client.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.body.description, req.body.name, req.body.intro, req.body.outro, cleanTags.join(",")])
 				.on('row', function(r){
 					response["cast"] = r;
@@ -168,7 +142,9 @@ exports.publish = function(req, res) {
 	});
 };
 
+// publish update. called by the app when the user submits the meta info for the quickcast
 exports.publishUpdate = function(req, res) {
+	// Validate user token - this could be middleware
 	utilities.validateToken(req, function(err, result){
 		if (err) {
 			res.json({ status: 401, message: err }, 401);
@@ -188,6 +164,7 @@ exports.publishUpdate = function(req, res) {
 			cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
 		}
 
+		// as per publish, updatecast handles tags and all meta data normalisation
 		client.query("SELECT UpdateCast($1,$2,$3,$4,$5,$6);", [req.body.description, req.body.name, req.body.intro, req.body.outro, req.body.castid, cleanTags.join(",")])
 			.on('row', function(r){
 				response["cast"] = r;
@@ -199,22 +176,25 @@ exports.publishUpdate = function(req, res) {
 	});
 };
 
-exports.publishComplete = function(req, res) {
+// encode request. called once the raw mp4 has been uploaded and fires amazon encoding 
+exports.encodeRequest = function(req, res) {
 	if (req.headers.castid === undefined) {
 		res.json({ status: 400, message: "Invalid castid" }, 400); 
 		return;
 	}
 
+	// Validate user token - this could be middleware
 	utilities.validateToken(req, function(err, result){
 		if (err) {
 			res.json({ status: 401, message: err }, 401);
 			return;
 		}
 
-		// transcoding
+		// fire a message to amazon and start transcoding the video into mp4 and webm
 		var str = '%s/%s/quickcast.%s';
 
-		var et = new AWS.ElasticTranscoder();
+		var et1 = new AWS.ElasticTranscoder();
+		var et2 = new AWS.ElasticTranscoder();
 
 		var params_mp4 = { 
 			'PipelineId': amazonDetails.pipelineId,
@@ -252,26 +232,95 @@ exports.publishComplete = function(req, res) {
 			}
 		};
 
-		et.createJob(params_mp4, function(err1, data1) {
-			if (err1){
-				res.json({ status: 400, message: err1 }, 400);
-				return;
+		// transcode mp4
+		et1.createJob(params_mp4);
+		// transcode webm
+		et2.createJob(params_webm);
+
+		res.json({ status: 200, message: "Encoding requested" }, 200);
+	});
+};
+
+// publish complete. called once the user has submiited all meta data and the raw mp4 has been uploaded to amazon
+exports.publishComplete = function(req, res) {
+	if (req.headers.castid === undefined) {
+		res.json({ status: 400, message: "Invalid castid" }, 400); 
+		return;
+	}
+
+	// Validate user token - this could be middleware
+	utilities.validateToken(req, function(err, result){
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
+
+		// fire a message to amazon and start transcoding the video into mp4 and webm
+		/*var str = '%s/%s/quickcast.%s';
+
+		var et = new AWS.ElasticTranscoder();
+
+		var params_mp4 = { 
+			'PipelineId': amazonDetails.pipelineId,
+			'Input': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'FrameRate': 'auto',
+				'Resolution': 'auto',
+				'AspectRatio': 'auto',
+				'Interlaced': 'auto',
+				'Container': 'auto'
+			},
+			'Output': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'PresetId': amazonDetails.mp4,
+				'ThumbnailPattern': "",
+				'Rotate': '0'
 			}
-			et.createJob(params_webm, function(err2, data2) {
-				if (err2){
-					res.json({ status: 400, message: err2 }, 400);
-					return;
-				}
+		};
+
+		var params_webm = { 
+			'PipelineId': amazonDetails.pipelineId,
+			'Input': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+				'FrameRate': 'auto',
+				'Resolution': 'auto',
+				'AspectRatio': 'auto',
+				'Interlaced': 'auto',
+				'Container': 'auto'
+			},
+			'Output': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+				'PresetId': amazonDetails.webM,
+				'ThumbnailPattern': "",
+				'Rotate': '0'
+			}
+		};*/
+
+		// transcode mp4
+		//et.createJob(params_mp4, function(err1, data1) {
+		//	if (err1){
+		//		res.json({ status: 400, message: err1 }, 400);
+		//		return;
+		//	}
+			// transcode webm
+		//	et.createJob(params_webm, function(err2, data2) {
+		//		if (err2){
+		//			res.json({ status: 400, message: err2 }, 400);
+		//			return;
+		//		}
 				var client = new pg.Client(postgres);
 				client.connect();
 
+				// get a hash for our unique video url
 				var hashids = new Hashids("quickyo"),
     				hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
 
+    			// update the database with the final details and mark the quickcast as published
 				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
 					.on('end', function(r) {
 						client.end();
 
+						// send a postmark confirmation mail
 						var postmark = require("postmark")(utilities.getPostmark().apiKey);
 
 						postmark.send({
@@ -283,11 +332,12 @@ exports.publishComplete = function(req, res) {
 
 						res.json({ status: 200, message: "Successfully published", url: "http://quick.as/" + hash }, 200);
 					});
-			});
-		});
+			//});
+		//});
 	});
 };
 
+// Casts API index page
 exports.index = function(req, res) {
 	res.render('api/casts/index', {
 		title: 'API'
