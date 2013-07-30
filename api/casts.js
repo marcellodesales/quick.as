@@ -193,10 +193,10 @@ exports.encodeRequest = function(req, res) {
 		// fire a message to amazon and start transcoding the video into mp4 and webm
 		var str = '%s/%s/quickcast.%s';
 
-		var et1 = new AWS.ElasticTranscoder();
-		var et2 = new AWS.ElasticTranscoder();
+		var et = new AWS.ElasticTranscoder();
+		//var et2 = new AWS.ElasticTranscoder();
 
-		var params_mp4 = { 
+		var params = { 
 			'PipelineId': amazonDetails.pipelineId,
 			'Input': {
 				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
@@ -206,15 +206,23 @@ exports.encodeRequest = function(req, res) {
 				'Interlaced': 'auto',
 				'Container': 'auto'
 			},
-			'Output': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'PresetId': amazonDetails.mp4,
-				'ThumbnailPattern': "",
-				'Rotate': '0'
-			}
+			'Outputs': [
+				{
+					'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+					'PresetId': amazonDetails.mp4,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				},
+				{
+					'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+					'PresetId': amazonDetails.webM,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				}
+			]
 		};
 
-		var params_webm = { 
+		/*var params_webm = { 
 			'PipelineId': amazonDetails.pipelineId,
 			'Input': {
 				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
@@ -230,14 +238,19 @@ exports.encodeRequest = function(req, res) {
 				'ThumbnailPattern': "",
 				'Rotate': '0'
 			}
-		};
+		};*/
 
-		// transcode mp4
-		et1.createJob(params_mp4);
-		// transcode webm
-		et2.createJob(params_webm);
+		// We fire both encode requests at the same time - not interested in fails, want them both to happen as fast as possible
 
-		res.json({ status: 200, message: "Encoding requested" }, 200);
+		// transcode
+		et.createJob(params, function(){
+			if (err1){
+				res.json({ status: 500, message: err1 }, 500);
+				return;
+			}
+
+			res.json({ status: 200, message: "Encoding requested" }, 200);
+		});
 	});
 };
 
