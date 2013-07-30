@@ -194,7 +194,6 @@ exports.encodeRequest = function(req, res) {
 		var str = '%s/%s/quickcast.%s';
 
 		var et = new AWS.ElasticTranscoder();
-		//var et2 = new AWS.ElasticTranscoder();
 
 		var params = { 
 			'PipelineId': amazonDetails.pipelineId,
@@ -222,26 +221,6 @@ exports.encodeRequest = function(req, res) {
 			]
 		};
 
-		/*var params_webm = { 
-			'PipelineId': amazonDetails.pipelineId,
-			'Input': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'FrameRate': 'auto',
-				'Resolution': 'auto',
-				'AspectRatio': 'auto',
-				'Interlaced': 'auto',
-				'Container': 'auto'
-			},
-			'Output': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
-				'PresetId': amazonDetails.webM,
-				'ThumbnailPattern': "",
-				'Rotate': '0'
-			}
-		};*/
-
-		// We fire both encode requests at the same time - not interested in fails, want them both to happen as fast as possible
-
 		// transcode
 		et.createJob(params, function(err1, data1){
 			if (err1){
@@ -254,7 +233,7 @@ exports.encodeRequest = function(req, res) {
 	});
 };
 
-// publish complete. called once the user has submiited all meta data and the raw mp4 has been uploaded to amazon
+// publish complete. sets the quickcast to published
 exports.publishComplete = function(req, res) {
 	if (req.headers.castid === undefined) {
 		res.json({ status: 400, message: "Invalid castid" }, 400); 
@@ -268,85 +247,30 @@ exports.publishComplete = function(req, res) {
 			return;
 		}
 
-		// fire a message to amazon and start transcoding the video into mp4 and webm
-		/*var str = '%s/%s/quickcast.%s';
+		var client = new pg.Client(postgres);
+		client.connect();
 
-		var et = new AWS.ElasticTranscoder();
+		// get a hash for our unique video url
+		var hashids = new Hashids("quickyo"),
+			hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
 
-		var params_mp4 = { 
-			'PipelineId': amazonDetails.pipelineId,
-			'Input': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'FrameRate': 'auto',
-				'Resolution': 'auto',
-				'AspectRatio': 'auto',
-				'Interlaced': 'auto',
-				'Container': 'auto'
-			},
-			'Output': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'PresetId': amazonDetails.mp4,
-				'ThumbnailPattern': "",
-				'Rotate': '0'
-			}
-		};
+		// update the database with the final details and mark the quickcast as published
+		client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
+			.on('end', function(r) {
+				client.end();
 
-		var params_webm = { 
-			'PipelineId': amazonDetails.pipelineId,
-			'Input': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
-				'FrameRate': 'auto',
-				'Resolution': 'auto',
-				'AspectRatio': 'auto',
-				'Interlaced': 'auto',
-				'Container': 'auto'
-			},
-			'Output': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
-				'PresetId': amazonDetails.webM,
-				'ThumbnailPattern': "",
-				'Rotate': '0'
-			}
-		};*/
+				// send a postmark confirmation mail
+				var postmark = require("postmark")(utilities.getPostmark().apiKey);
 
-		// transcode mp4
-		//et.createJob(params_mp4, function(err1, data1) {
-		//	if (err1){
-		//		res.json({ status: 400, message: err1 }, 400);
-		//		return;
-		//	}
-			// transcode webm
-		//	et.createJob(params_webm, function(err2, data2) {
-		//		if (err2){
-		//			res.json({ status: 400, message: err2 }, 400);
-		//			return;
-		//		}
-				var client = new pg.Client(postgres);
-				client.connect();
+				postmark.send({
+					"From": utilities.getPostmark().from, 
+					"To": result.user.email, 
+					"Subject": "Published QuickCast", 
+					"TextBody": "Hi " + result.user.firstname + ",\n\nYour QuickCast has been published successfully!\n\nIt can take a few seconds to encode your QuickCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash + "\n\nThanks for using QuickCast\n\nhttp://quickcast.io\nhttp://twitter.com/quickcast"
+				});
 
-				// get a hash for our unique video url
-				var hashids = new Hashids("quickyo"),
-    				hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
-
-    			// update the database with the final details and mark the quickcast as published
-				client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
-					.on('end', function(r) {
-						client.end();
-
-						// send a postmark confirmation mail
-						var postmark = require("postmark")(utilities.getPostmark().apiKey);
-
-						postmark.send({
-							"From": utilities.getPostmark().from, 
-							"To": result.user.email, 
-							"Subject": "Published QuickCast", 
-							"TextBody": "Hi " + result.user.firstname + ",\n\nYour QuickCast has been published successfully!\n\nIt can take a few seconds to encode your QuickCast once it has been uploaded, but once ready you can view online at the following URL: http://quick.as/" + hash + "\n\nThanks for using QuickCast\n\nhttp://quickcast.io\nhttp://twitter.com/quickcast"
-						});
-
-						res.json({ status: 200, message: "Successfully published", url: "http://quick.as/" + hash }, 200);
-					});
-			//});
-		//});
+				res.json({ status: 200, message: "Successfully published", url: "http://quick.as/" + hash }, 200);
+			});
 	});
 };
 
