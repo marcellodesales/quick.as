@@ -243,7 +243,7 @@ exports.encodeRequest = function(req, res) {
 		// We fire both encode requests at the same time - not interested in fails, want them both to happen as fast as possible
 
 		// transcode
-		et.createJob(params, function(){
+		et.createJob(params, function(err1, data1){
 			if (err1){
 				res.json({ status: 500, message: err1 }, 500);
 				return;
