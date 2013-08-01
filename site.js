@@ -77,7 +77,7 @@ exports.video = function(req, res) {
 
 					var str = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast.%s';
 					var strSmall = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast-small.%s';
-					var fileCheck = '/%s/%s/quickcast-small.%s';
+					var fileCheck = '/%s/%s/quickcast.%s';
 
 					var amazonDetails = utilities.getAmazonDetails();
 
@@ -88,7 +88,7 @@ exports.video = function(req, res) {
 					// Check that the last video to be encoded exists (in this case webm)
 					// should consider handling this in the app flow and this would
 					// negate the need for this check here
-					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'mp4'), function (err5, s3res) {
+					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err5, s3res) {
 
 						var processed = null;
 
@@ -155,7 +155,7 @@ exports.embed = function(req, res) {
 
 		var str = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast.%s';
 		var strSmall = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast-small.%s';
-		var fileCheck = '/%s/%s/quickcast-small.%s';
+		var fileCheck = '/%s/%s/quickcast.%s';
 
 		var amazonDetails = utilities.getAmazonDetails();
 
@@ -163,7 +163,7 @@ exports.embed = function(req, res) {
 
 		s3.setBucket(amazonDetails.destinationBucket);
 
-		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'mp4'), function (err3, s3res) {
+		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err3, s3res) {
 
 			var processed = null;
 
