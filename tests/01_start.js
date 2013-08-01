@@ -3,7 +3,9 @@ var request = require('supertest');
 var assert  = require('assert');
 var should  = require('should');
 
-describe('Put /api/v1/users/setup success', function(){
+// Disabled for go live
+
+/*describe('Put /api/v1/users/setup success', function(){
     it('should drop and rebuild postgres and return json',function(done){
         request(app)
         .get('/api/v1/users/setup')
@@ -14,4 +16,4 @@ describe('Put /api/v1/users/setup success', function(){
           done()
         });
     });
-});
+});*/

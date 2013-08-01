@@ -108,15 +108,15 @@ exports.validateToken = function(req, callback){
 };
 
 // Log views - initially to redis and then persisted to postgres
-// Benefits of approach
-// - it's fast
+// General benefits of writing to redis before persisting to postgres
+// - it's fast + much cheaper than writing to postgres
 // - reduces database writes (postgres)
 // - stops the same user / ip logging on refresh
 // This is currently not a great implementation
-// - potential for race condition
 // - relies on subsequent visits and limits to persist from redis to postgres
 // Better approach would be if redis - postgres was handled automaticallu through invalidation or cron job
 // potentiallty: https://github.com/ncb000gt/node-cron
+// see below started implementing cron job
 exports.logViews = function(video_entry, req, callback){
   var redisConfig = this.getRedisConfig(),
       client = redis.createClient(redisConfig.port, redisConfig.host)
@@ -127,13 +127,15 @@ exports.logViews = function(video_entry, req, callback){
   if (ip === undefined)
     ip = req.connection.remoteAddress;
 
+  // Only log if user ip and this entry are not logged in redis
   client.get(video_entry+"_"+ip, function(err, reply) {
     if (reply === null) {
-      client.set(video_entry+"_"+ip, new Date());
+      client.set("entry_"+video_entry+"_"+ip, new Date());
       client.incr(video_entry);
     }
   });
 
+  // check the entries and persist to postgres if limits met
   client.get(video_entry, function(err, reply) {
     // if 10 logs already then persist them to postgres
     if (reply === "10"){
@@ -162,3 +164,41 @@ exports.logViews = function(video_entry, req, callback){
     callback(null, count);
   });
 };
+
+// Fire and forget - this will override some of the functionality above
+/*exports.persistRedisLogsToPostgres = function(date){
+
+  var current = new Date();
+  console.log("original: " + date);
+
+  var newDateObj = new Date(date.getTime() + 2*60000); // + 10 mins
+
+  console.log("current: " + current);
+
+  if (current.getTime() > newDateObj.getTime())
+  {
+    console.log("greater than yes");
+  }
+  else
+  {
+    console.log("no");
+  }
+
+  var redisConfig = this.getRedisConfig(),
+      client = redis.createClient(redisConfig.port, redisConfig.host);
+
+  client.auth(redisConfig.password);
+
+  client.keys('*', function (keys) { 
+    for (key in keys) { 
+      console.log(key); 
+    } 
+  });
+
+  client.keys(video_entry + "_*", function(err, replies) {
+    replies.forEach(function (reply, i) {
+      console.log("    " + i + ": " + reply);
+    });
+  });
+
+};*/

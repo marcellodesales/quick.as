@@ -3,6 +3,8 @@ var request = require('supertest');
 var assert  = require('assert');
 var should  = require('should');
 
+// Disabled for go live
+
 /*describe('Put /api/v1/casts/publish', function(){
     it('should respond 200 json',function(done){
         request(app)

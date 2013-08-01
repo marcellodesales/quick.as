@@ -205,20 +205,20 @@ exports.encodeRequest = function(req, res) {
 				'Interlaced': 'auto',
 				'Container': 'auto'
 			},
-			'Outputs': [
-				{
+			'Output': //[
+				/*{
 					'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
 					'PresetId': amazonDetails.mp4,
 					'ThumbnailPattern': "",
 					'Rotate': '0'
-				},
+				},*/
 				{
 					'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
 					'PresetId': amazonDetails.webM,
 					'ThumbnailPattern': "",
 					'Rotate': '0'
 				}
-			]
+			//]
 		};
 
 		// transcode

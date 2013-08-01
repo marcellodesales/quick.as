@@ -20,6 +20,7 @@
     "moment": "2.1.0",
     "aws2js": "0.8.3",
     "hashids": "0.1.4",
-    "postmark": "0.1.8" 
+    "postmark": "0.1.8",
+    "cron": "1.0.1"
   }
 }

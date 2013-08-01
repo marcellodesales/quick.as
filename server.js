@@ -2,7 +2,8 @@ var express = require('express'),
 	users = require('./api/users'),
 	casts = require('./api/casts'),
 	api = require('./api/index'),
-	site = require('./site');
+	site = require('./site'),
+	utilities = require('./libs/utilities');
  
 var app = express();
 
@@ -47,8 +48,7 @@ app.post('/api/v1/users/signin', users.signin);
 app.put('/api/v1/users/signup', users.signup);
 app.get('/api/v1/users/userbytoken', users.userByToken);
 app.get('/api/v1/users/usercasts', users.userCasts);
-
-//app.get('/api/v1/users/setup', users.setup); // Setup
+//app.get('/api/v1/users/setup', users.setup); // Setup / tests
 
 // Casts
 app.get('/api/v1/casts', casts.index);
@@ -56,8 +56,7 @@ app.put('/api/v1/casts/publish', casts.publish);
 app.post('/api/v1/casts/publish/complete', casts.publishComplete);
 app.post('/api/v1/casts/publish/update', casts.publishUpdate);
 app.get('/api/v1/casts/publish/encode', casts.encodeRequest);
-
-//app.get('/api/v1/casts/setup', casts.setup); // Setup
+//app.get('/api/v1/casts/setup', casts.setup); // Setup / tests
 
 /* Site Video */
 
@@ -65,6 +64,15 @@ app.get('/:entry', site.video);
 
 var port = process.env.PORT || 5000;
 
+// Start the server
 app.listen(port, function() {
 	console.log('running on', port);
+
+	// Potentially activate this for a better implementation
+	// managing log persistance
+	/*var cronJob = require('cron').CronJob;
+	var date = new Date();
+	new cronJob('59 * * * * *', function(){
+		utilities.persistRedisLogsToPostgres(date);
+	}, null, true, null);*/
 });
