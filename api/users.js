@@ -87,6 +87,17 @@ exports.signup = function(req, res){
 					.on('end', function(){
 						client.end();
 						var token = jwt.encode({ email: email }, utilities.getSecret());
+
+						// send a postmark confirmation mail
+						var postmark = require("postmark")(utilities.getPostmark().apiKey);
+
+						postmark.send({
+							"From": utilities.getPostmark().from, 
+							"To": email, 
+							"Subject": "Welcome to QuickCast", 
+							"TextBody": "Hi " + firstname + ",\n\nThis email is simply to comfirm that you have created an account and published your first QuickCast!\n\nThanks for using QuickCast\n\nhttp://quickcast.io\nhttp://twitter.com/quickcast"
+						});
+
 						res.json({ token: token });
 					});
 			});
