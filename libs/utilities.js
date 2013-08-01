@@ -130,7 +130,7 @@ exports.logViews = function(video_entry, req, callback){
   // Only log if user ip and this entry are not logged in redis
   client.get(video_entry+"_"+ip, function(err, reply) {
     if (reply === null) {
-      client.set("entry_"+video_entry+"_"+ip, new Date());
+      client.set(video_entry+"_"+ip, new Date());
       client.incr(video_entry);
     }
   });
