@@ -138,7 +138,7 @@ exports.logViews = function(video_entry, req, callback){
   // check the entries and persist to postgres if limits met
   client.get(video_entry, function(err, reply) {
     // if 10 logs already then persist them to postgres
-    if (reply === "10"){
+    if (reply >= "10"){
       client.del(video_entry);
       client.keys(video_entry + "_*", function(err,replies) {
         client.del(replies);
@@ -148,7 +148,7 @@ exports.logViews = function(video_entry, req, callback){
       var pClient = new pg.Client(postgres);
       pClient.connect();
 
-      pClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [10, video_entry])
+      pClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [parseInt(reply), video_entry])
         .on('end', function() {
           pClient.end();
         });
