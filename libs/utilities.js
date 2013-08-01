@@ -148,7 +148,7 @@ exports.logViews = function(video_entry, req, callback){
       var pClient = new pg.Client(postgres);
       pClient.connect();
 
-      pClient.query("UPDATE casts SET views = views + $1 WHERE castid = $2", [5, video_entry])
+      pClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [10, video_entry])
         .on('end', function() {
           pClient.end();
         });
