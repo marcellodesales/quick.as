@@ -76,7 +76,8 @@ exports.video = function(req, res) {
 					var duration = moment(data.created).hours();
 
 					var str = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast.%s';
-					var fileCheck = '/%s/%s/quickcast.%s';
+					var strSmall = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast-small.%s';
+					var fileCheck = '/%s/%s/quickcast-small.%s';
 
 					var amazonDetails = utilities.getAmazonDetails();
 
@@ -87,19 +88,18 @@ exports.video = function(req, res) {
 					// Check that the last video to be encoded exists (in this case webm)
 					// should consider handling this in the app flow and this would
 					// negate the need for this check here
-					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err5, s3res) {
+					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'mp4'), function (err5, s3res) {
 
 						var processed = null;
 
 						if (err5 && err5.code === 404){
 							processed = "processing";
-							//if (duration > 2)
-							//	processed = "failed";
 						}
 						else if (err5 && err5.statusCode != 200)
 							processed = "failed";
 
 					    res.render('video', {
+					    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
 							mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
 							webm: util.format(str, data.ownerid, data.castid, 'webm'),
 							body: content,
@@ -117,6 +117,7 @@ exports.video = function(req, res) {
 							video_intro: data.intro,
 							video_outro: data.outro
 						});
+
 					});
 				});
 			});
@@ -153,7 +154,8 @@ exports.embed = function(req, res) {
 		var duration = moment(data.created).hours();
 
 		var str = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast.%s';
-		var fileCheck = '/%s/%s/quickcast.%s';
+		var strSmall = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast-small.%s';
+		var fileCheck = '/%s/%s/quickcast-small.%s';
 
 		var amazonDetails = utilities.getAmazonDetails();
 
@@ -161,19 +163,18 @@ exports.embed = function(req, res) {
 
 		s3.setBucket(amazonDetails.destinationBucket);
 
-		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err3, s3res) {
+		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'mp4'), function (err3, s3res) {
 
 			var processed = null;
 
 			if (err3 && err3.code === 404){
 				processed = "processing";
-				if (duration > 2)
-					processed = "failed";
 			}
 			else if (err3 && err3.statusCode != 200)
 				processed = "failed";
 
 		    res.render('embed', {
+		    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
 				mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
 				webm: util.format(str, data.ownerid, data.castid, 'webm'),
 				processed: processed,

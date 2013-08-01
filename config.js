@@ -18,6 +18,7 @@ config.amazon.destinationBucket = process.env.AWS_BUCKET;
 config.amazon.pipelineId = process.env.AWS_PIPELINE_ID;
 config.amazon.webM = process.env.AWS_WEBM;
 config.amazon.mp4 = process.env.AWS_MP4;
+config.amazon.mp4small = process.env.AWS_MP4SMALL;
 
 config.bcrypt.secret = process.env.BCRYPT_SECRET;
 

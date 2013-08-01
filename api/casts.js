@@ -192,6 +192,7 @@ exports.encodeRequest = function(req, res) {
 
 		// fire a message to amazon and start transcoding the video into mp4 and webm
 		var str = '%s/%s/quickcast.%s';
+		var strSmall = '%s/%s/quickcast-small.%s';
 
 		var et = new AWS.ElasticTranscoder();
 
@@ -205,12 +206,20 @@ exports.encodeRequest = function(req, res) {
 				'Interlaced': 'auto',
 				'Container': 'auto'
 			},
-			'Output': {
-				'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
-				'PresetId': amazonDetails.webM,
-				'ThumbnailPattern': "",
-				'Rotate': '0'
-			}
+			'Outputs': [
+				{
+					'Key': util.format(strSmall, result.user.userid, req.headers.castid, 'mp4'),
+					'PresetId': amazonDetails.mp4small,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				},
+				{
+					'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+					'PresetId': amazonDetails.webM,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				}
+			]
 		};
 
 		// transcode
