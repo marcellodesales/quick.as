@@ -91,9 +91,7 @@ exports.video = function(req, res) {
 					// should consider handling this in the app flow and this would
 					// negate the need for this check here
 					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err5, s3res) {
-
-						s3.head(util.format(gifCheck, data.ownerid, data.castid, function (err6, s3res1) {
-
+						s3.head(util.format(gifCheck, data.ownerid, data.castid), function (err6, s3res1) {
 							var processed = null;
 							var gifexists = false;
 							var gif = null;
@@ -175,7 +173,6 @@ exports.embed = function(req, res) {
 		s3.setBucket(amazonDetails.destinationBucket);
 
 		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err3, s3res) {
-
 			var processed = null;
 
 			if (err3 && err3.code === 404){
@@ -196,7 +193,6 @@ exports.embed = function(req, res) {
 				video_intro: data.intro,
 				video_outro: data.outro
 			});
-
 		});
 	});
 };
