@@ -124,7 +124,9 @@ exports.video = function(req, res) {
 								video_intro: data.intro,
 								video_outro: data.outro,
 								gif: util.format(strGif, data.ownerid, data.castid),
-								gifexists: gifexists
+								gifexists: gifexists,
+								desc: utilities.stripHtml(content),
+								img: util.format(str, data.ownerid, data.castid, 'jpg')
 							});
 						});
 					});

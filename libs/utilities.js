@@ -8,6 +8,14 @@ var bcrypt = require('bcrypt'),
     postgres = config.postgres.connection,
     redis = require('redis');
 
+
+exports.stripHtml = function(str){
+  if (str === undefined || str === null)
+    return "QuickCast. Make. Publish. Share. 3 Minute Screencasts";
+  
+  return str.replace(/(<([^>]+)>)/ig,"");
+}
+
 // returns the postmark config
 exports.getPostmark = function(){
   return config.postmark;

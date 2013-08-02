@@ -67,7 +67,6 @@ var port = process.env.PORT || 5000;
 // Start the server
 app.listen(port, function() {
 	console.log('running on', port);
-
 	// Potentially activate this for a better implementation
 	// managing log persistance
 	/*var cronJob = require('cron').CronJob;
