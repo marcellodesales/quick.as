@@ -102,7 +102,7 @@ exports.video = function(req, res) {
 							else if (err5 && err5.statusCode != 200)
 								processed = "failed";
 
-							if (err6.statusCode === 200)
+							if (!err6)
 								gifexists = true;
 
 						    res.render('video', {
