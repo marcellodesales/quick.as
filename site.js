@@ -78,6 +78,8 @@ exports.video = function(req, res) {
 					var str = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast.%s';
 					var strSmall = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast-small.%s';
 					var fileCheck = '/%s/%s/quickcast.%s';
+					var gifCheck = '/%s/%s/quickcast.gif';
+					var strGif = 'https://s3.amazonaws.com/quickcast/%s/%s/quickcast.gif';
 
 					var amazonDetails = utilities.getAmazonDetails();
 
@@ -90,34 +92,43 @@ exports.video = function(req, res) {
 					// negate the need for this check here
 					s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err5, s3res) {
 
-						var processed = null;
+						s3.head(util.format(gifCheck, data.ownerid, data.castid, function (err6, s3res1) {
 
-						if (err5 && err5.code === 404){
-							processed = "processing";
-						}
-						else if (err5 && err5.statusCode != 200)
-							processed = "failed";
+							var processed = null;
+							var gifexists = false;
+							var gif = null;
 
-					    res.render('video', {
-					    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
-							mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
-							webm: util.format(str, data.ownerid, data.castid, 'webm'),
-							body: content,
-							views: data.views + r,
-							title: data.name,
-							username: data.username,
-							when: a.from(b),
-							processed: processed,
-							id: data.castid,
-							pageTitle: data.name,
-							video_width: data.width,
-							video_height: data.height,
-							uniqueid: video_entry.toLowerCase(),
-							tags: tags,
-							video_intro: data.intro,
-							video_outro: data.outro
+							if (err5 && err5.code === 404){
+								processed = "processing";
+							}
+							else if (err5 && err5.statusCode != 200)
+								processed = "failed";
+
+							if (err6.statusCode === 200)
+								gifexists = true;
+
+						    res.render('video', {
+						    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
+								mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
+								webm: util.format(str, data.ownerid, data.castid, 'webm'),
+								body: content,
+								views: data.views + r,
+								title: data.name,
+								username: data.username,
+								when: a.from(b),
+								processed: processed,
+								id: data.castid,
+								pageTitle: data.name,
+								video_width: data.width,
+								video_height: data.height,
+								uniqueid: video_entry.toLowerCase(),
+								tags: tags,
+								video_intro: data.intro,
+								video_outro: data.outro,
+								gif: util.format(strGif, data.ownerid, data.castid),
+								gifexists: gifexists
+							});
 						});
-
 					});
 				});
 			});

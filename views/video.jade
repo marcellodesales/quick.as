@@ -27,3 +27,5 @@ block content
 					a(href="#embed", class="embed", data-width="#{video_width}", data-height="#{video_height}")
 						span Embed
 					a(href="http://quick.as/#{uniqueid}") quick.as/#{uniqueid}
+					if gifexists
+						a(href="#{gif}") Animated Gif
