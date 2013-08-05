@@ -3,10 +3,10 @@ var express = require('express'),
 	casts = require('./api/casts'),
 	api = require('./api/index'),
 	site = require('./site'),
-	utilities = require('./libs/utilities'),
-	passport = require("passport"), 
-	LocalStrategy = require('passport-local').Strategy,
-	redis = require('redis');
+	utilities = require('./libs/utilities');
+	//passport = require("passport"), 
+	//LocalStrategy = require('passport-local').Strategy,
+	//redis = require('redis');
  
 var app = express();
 
