@@ -16,6 +16,11 @@ exports.stripHtml = function(str){
   return str.replace(/(<([^>]+)>)/ig,"");
 }
 
+// returns a session secret
+exports.getSessionSecret = function(){
+  return config.sessionSecret;
+}
+
 // returns the postmark config
 exports.getPostmark = function(){
   return config.postmark;

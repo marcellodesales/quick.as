@@ -3,7 +3,10 @@ var express = require('express'),
 	casts = require('./api/casts'),
 	api = require('./api/index'),
 	site = require('./site'),
-	utilities = require('./libs/utilities');
+	utilities = require('./libs/utilities'),
+	passport = require("passport"), 
+	LocalStrategy = require('passport-local').Strategy,
+	redis = require('redis');
  
 var app = express();
 
@@ -11,10 +14,50 @@ module.exports = app;
 
 var oneDay = 86400000;
 
+/* Implement passport against postgres lookup
+ * session will be held in redis
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function(err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.email);
+});
+
+passport.deserializeUser(function(email, done) {
+    User.findOne({email:email}, function(err, user) {
+        done(err, user);
+    });
+});*/
+
+/*var redisConfig = this.getRedisConfig(),
+    redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+
+redisClient.auth(redisConfig.password);*/
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+
+/*app.use(express.session({
+  store: redisClient),
+  secret: utilities.getSessionSecret()
+}));
+app.use(passport.initialize());
+app.use(passport.session());*/
+
 app.use(express.compress());
 app.use(express.favicon(__dirname + '/public/favicon.ico'));
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));

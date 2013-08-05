@@ -10,6 +10,8 @@ config.postmark = {};
 
 config.postgres.connection = process.env.DATABASE_URL;
 
+config.sessionSecret = process.env.SESSION_SECRET;
+
 config.amazon.accessKeyId = process.env.AWS_KEY;
 config.amazon.secretAccessKey = process.env.AWS_SECRET;
 config.amazon.region = process.env.AWS_REGION;
