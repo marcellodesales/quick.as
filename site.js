@@ -175,25 +175,27 @@ exports.embed = function(req, res) {
 		s3.setBucket(amazonDetails.destinationBucket);
 
 		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err3, s3res) {
-			var processed = null;
+			utilities.logViews(video_entry, req, function(err4, logRes) {
+				var processed = null;
 
-			if (err3 && err3.code === 404){
-				processed = "processing";
-			}
-			else if (err3 && err3.statusCode != 200)
-				processed = "failed";
+				if (err3 && err3.code === 404){
+					processed = "processing";
+				}
+				else if (err3 && err3.statusCode != 200)
+					processed = "failed";
 
-		    res.render('embed', {
-		    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
-				mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
-				webm: util.format(str, data.ownerid, data.castid, 'webm'),
-				processed: processed,
-				id: data.castid,
-				video_width: data.width,
-				video_height: data.height,
-				uniqueid: video_entry.toLowerCase(),
-				video_intro: data.intro,
-				video_outro: data.outro
+			    res.render('embed', {
+			    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
+					mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
+					webm: util.format(str, data.ownerid, data.castid, 'webm'),
+					processed: processed,
+					id: data.castid,
+					video_width: data.width,
+					video_height: data.height,
+					uniqueid: video_entry.toLowerCase(),
+					video_intro: data.intro,
+					video_outro: data.outro
+				});
 			});
 		});
 	});
