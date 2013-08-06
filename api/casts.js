@@ -103,7 +103,7 @@ exports.publish = function(req, res) {
 		var client = new pg.Client(postgres),
 			sts = new AWS.STS();
 
-		var params = { 'Name' : 'Temporary', 'Policy' : '{"Statement":[{"Effect":"Allow","Action":["s3:GetObject","s3:PutObject"],"Resource":"arn:aws:s3:::quickcast/*"}]}', 'DurationSeconds' : 1200 };
+		var params = { 'Name' : 'Temporary', 'Policy' : '{"Statement":[{"Effect":"Allow","Action":["s3:GetObject","s3:PutObject","s3:PutObjectAcl"],"Resource":"arn:aws:s3:::quickcast/*"}]}', 'DurationSeconds' : 1200 };
 
 		// Get a temp amazon s3 token
 		sts.client.getFederationToken(params, function(err, data){
