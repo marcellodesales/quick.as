@@ -5,7 +5,7 @@ var jwt = require('jwt-simple'),
 	Q = require('q');
 
 // Simply a setup controller - drops and recreated all tables and functions in postgres
-exports.setup = function(req, res) {
+/*exports.setup = function(req, res) {
 	var client = new pg.Client(postgres);
 	client.connect();
 
@@ -14,7 +14,7 @@ exports.setup = function(req, res) {
 			client.end();
 			res.json({ "complete": true }, 200);
 		});
-};
+};*/
 
 // handles the user signup
 exports.signup = function(req, res){

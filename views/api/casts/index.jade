@@ -1,9 +1,9 @@
 extend layout
 block content
   ul
-    li
-      a(href='/api/v1/casts/setup') Setup
-      p GET. Drop and Create table 'casts, tags, casts_tags'
+    //- li
+    //-  a(href='/api/v1/casts/setup') Setup
+    //-  p GET. Drop and Create table 'casts, tags, casts_tags'
     li 
       a(href='/api/v1/casts/publish') Publish
       p PUT. Headers: token. Body: description, name, tags (comma separated), intro, outro. Responds with JSON (temp amazon access keys, requesting user details and cast id) or 401

@@ -10,7 +10,7 @@ var jwt = require('jwt-simple'),
 AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
 
 // Simply a setup controller - drops and recreated all tables and functions in postgres
-exports.setup = function(req, res) {
+/* exports.setup = function(req, res) {
 	var client = new pg.Client(postgres);
 	client.connect();
 
@@ -87,7 +87,7 @@ $$ language plpgsql;";
 			});
 		});
 	});
-};
+};*/
 
 // Publish, called as soon as the user confirms they wish to publish their quickcast
 // Expects a valid user token and responds with a castid and a temporary 
