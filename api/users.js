@@ -83,7 +83,7 @@ exports.signup = function(req, res){
 		.then(usernameExists)
 		.then(function(){
 			utilities.cryptPassword(password,function(err,pwd){
-				client.query("INSERT INTO users(created,firstname,lastname,email,username,password,mailinglist) SELECT $1,$2,$3,$4,$5,$6,$7 WHERE NOT EXISTS ( SELECT * FROM users WHERE username = $4 )", [new Date(), firstname, lastname, email, username, pwd, mailinglist])
+				client.query("INSERT INTO users(created,firstname,lastname,email,username,password,mailinglist) VALUES ($1,$2,$3,$4,$5,$6,$7)", [new Date(), firstname, lastname, email, username, pwd, mailinglist])
 					.on('end', function(){
 						client.end();
 						var token = jwt.encode({ email: email }, utilities.getSecret());
