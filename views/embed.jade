@@ -6,7 +6,7 @@ block content
 		else if processed === "failed"
 			p This QuickCast failed to process
 		else
-			video(data-width="#{video_width}", data-height="#{video_height}", data-intro="#{video_intro}", data-outro="#{video_outro}")
+			video(preload="auto", style="max-width:#{video_width}px", data-width="#{video_width}", data-height="#{video_height}", data-intro="#{video_intro}", data-outro="#{video_outro}")
 				//- source(src="#{mp4}", type="video/mp4")
 				source(src="#{mp4small}", type="video/mp4")
 				source(src="#{webm}", type="video/webm")
