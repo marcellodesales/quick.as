@@ -2,6 +2,7 @@ extend layouts/layout
 block content
 	div(class="container #{processed}")
 		if processed === "processing"
+			span(class="busy")
 			p Encoding QuickCast &mdash; Please check again soon
 		else if processed === "failed"
 			p This QuickCast failed to process
