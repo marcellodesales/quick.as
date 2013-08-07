@@ -105,6 +105,9 @@ exports.video = function(req, res) {
 							if (!err6)
 								gifexists = true;
 
+							if (processed != "processing" && processed != "failed")
+								bodyClass = "loading"
+
 						    res.render('video', {
 						    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
 								mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
@@ -126,7 +129,8 @@ exports.video = function(req, res) {
 								gif: util.format(strGif, data.ownerid, data.castid),
 								gifexists: gifexists,
 								desc: utilities.stripHtml(content),
-								img: util.format(str, data.ownerid, data.castid, 'jpg')
+								img: util.format(str, data.ownerid, data.castid, 'jpg'),
+								bodyClass: bodyClass
 							});
 						});
 					});
