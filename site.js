@@ -96,17 +96,19 @@ exports.video = function(req, res) {
 							var gifexists = false;
 							var gif = null;
 
+							var bodyClass = "loading"
+
 							if (err5 && err5.code === 404){
 								processed = "processing";
+								bodyClass = "";
 							}
-							else if (err5 && err5.statusCode != 200)
+							else if (err5 && err5.statusCode != 200){
 								processed = "failed";
+								bodyClass = "";
+							}
 
 							if (!err6)
 								gifexists = true;
-
-							if (processed != "processing" && processed != "failed")
-								bodyClass = "loading"
 
 						    res.render('video', {
 						    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
@@ -185,8 +187,9 @@ exports.embed = function(req, res) {
 				if (err3 && err3.code === 404){
 					processed = "processing";
 				}
-				else if (err3 && err3.statusCode != 200)
+				else if (err3 && err3.statusCode != 200){
 					processed = "failed";
+				}
 
 			    res.render('embed', {
 			    	mp4small: util.format(strSmall, data.ownerid, data.castid, 'mp4'),
