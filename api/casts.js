@@ -253,7 +253,8 @@ exports.publishComplete = function(req, res) {
 
 		// get a hash for our unique video url
 		var hashids = new Hashids("quickyo"),
-			hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
+			  hash = hashids.encrypt(280, parseInt(req.headers.castid));
+			//hash = hashids.encrypt(parseInt(result.user.userid), parseInt(req.headers.castid));
 
 		// update the database with the final details and mark the quickcast as published
 		client.query("UPDATE casts SET published = true, size = $1, length = $2, width = $3, height = $4, uniqueid = $5 WHERE castid = $6", [req.headers.size, req.headers.length, parseInt(req.headers.width), parseInt(req.headers.height), hash, req.headers.castid])
