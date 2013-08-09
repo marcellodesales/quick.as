@@ -131,51 +131,61 @@ exports.validateToken = function(req, callback){
 // potentiallty: https://github.com/ncb000gt/node-cron
 // see below started implementing cron job
 exports.logViews = function(video_entry, req, callback){
+
   var redisConfig = this.getRedisConfig(),
       client = redis.createClient(redisConfig.port, redisConfig.host)
       ip = req.headers["x-forwarded-for"];
 
-  client.auth(redisConfig.password);
+  try
+  {
+    client.auth(redisConfig.password);
 
-  if (ip === undefined)
-    ip = req.connection.remoteAddress;
+    if (ip === undefined)
+      ip = req.connection.remoteAddress;
 
-  // Only log if user ip and this entry are not logged in redis
-  client.get(video_entry+"_"+ip, function(err, reply) {
-    if (reply === null) {
-      client.set(video_entry+"_"+ip, new Date());
-      client.incr(video_entry);
-    }
-  });
+    // Only log if user ip and this entry are not logged in redis
+    client.get(video_entry+"_"+ip, function(err, reply) {
+      if (reply === null) {
+        client.set(video_entry+"_"+ip, new Date());
+        client.incr(video_entry);
+      }
+    });
 
-  // check the entries and persist to postgres if limits met
-  client.get(video_entry, function(err, reply) {
-    // if 10 logs already then persist them to postgres
-    if (reply >= "10"){
-      client.del(video_entry);
-      client.keys(video_entry + "_*", function(err,replies) {
-        client.del(replies);
-        client.quit();
-      });
-
-      var pClient = new pg.Client(postgres);
-      pClient.connect();
-
-      pClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [parseInt(reply), video_entry])
-        .on('end', function() {
-          pClient.end();
+    // check the entries and persist to postgres if limits met
+    client.get(video_entry, function(err, reply) {
+      // if 10 logs already then persist them to postgres
+      if (reply >= "10"){
+        client.del(video_entry);
+        client.keys(video_entry + "_*", function(err,replies) {
+          client.del(replies);
+          client.quit();
         });
-    }
-    else
-      client.quit();
 
-    var count = 0;
+        var pClient = new pg.Client(postgres);
+        pClient.connect();
 
-    if (reply != null)
-      count = parseInt(reply);
+        pClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [parseInt(reply), video_entry])
+          .on('end', function() {
+            pClient.end();
+          });
+      }
+      else
+        client.quit();
 
-    callback(null, count);
-  });
+      var count = 0;
+
+      if (reply != null)
+        count = parseInt(reply);
+
+      callback(null, count);
+    });
+
+  }
+  catch(err)
+  {
+    // fail silently as this is not that important - should log though
+    callback(null, 0);
+  }
 };
 
 // Fire and forget - this will override some of the functionality above
