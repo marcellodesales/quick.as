@@ -8,11 +8,11 @@ var utilities = require('./libs/utilities'),
 // Marked (markdown) settings
 markedOpts = {
 	gfm: true,
-	highlight: function (code, lang, callback) {
-		pygmentize({ lang: lang, format: 'html' }, code, function (err, result) {
+	/*highlight: function (code, lang, callback) {
+		pygmentize({ lang: 'html', format: 'html' }, code, function (err, result) {
 			callback(err, result.toString());
 		});
-	},
+	},*/
 	tables: true,
 	breaks: false,
 	pedantic: false,
@@ -64,7 +64,7 @@ exports.video = function(req, res) {
 			}
 
 			// log the views
-			//utilities.logViews(video_entry, req, function(err3, r) {
+			utilities.logViews(video_entry, req, function(err3, r) {
 				marked(data.description, markedOpts, function (err4, content) {
 					if (err4) {
 						content = "Error converting Markdown!";
@@ -115,7 +115,7 @@ exports.video = function(req, res) {
 								mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
 								webm: util.format(str, data.ownerid, data.castid, 'webm'),
 								body: content,
-								views: data.views,//+ r,
+								views: data.views + r,
 								title: data.name,
 								username: data.username,
 								when: a.from(b),
@@ -137,7 +137,7 @@ exports.video = function(req, res) {
 						});
 					});
 				});
-			//});
+			});
 		});
 	});
 };
@@ -181,7 +181,7 @@ exports.embed = function(req, res) {
 		s3.setBucket(amazonDetails.destinationBucket);
 
 		s3.head(util.format(fileCheck, data.ownerid, data.castid, 'webm'), function (err3, s3res) {
-			//utilities.logViews(video_entry, req, function(err4, logRes) {
+			utilities.logViews(video_entry, req, function(err4, logRes) {
 				var processed = null;
 
 				if (err3 && err3.code === 404){
@@ -203,7 +203,7 @@ exports.embed = function(req, res) {
 					video_intro: data.intro,
 					video_outro: data.outro
 				});
-			//});
+			});
 		});
 	});
 };

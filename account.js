@@ -8,11 +8,11 @@ var utilities = require('./libs/utilities'),
 // Marked (markdown) settings
 markedOpts = {
 	gfm: true,
-	highlight: function (code, lang, callback) {
+	/*highlight: function (code, lang, callback) {
 		pygmentize({ lang: lang, format: 'html' }, code, function (err, result) {
 			callback(err, result.toString());
 		});
-	},
+	},*/
 	tables: true,
 	breaks: false,
 	pedantic: false,
