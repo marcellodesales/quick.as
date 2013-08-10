@@ -7,8 +7,9 @@ var bcrypt = require('bcrypt'),
     config = require('../config'),
     postgres = config.postgres.connection,
     redis = require('redis'),
-    redisConfig = this.getRedisConfig(),
-    redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+    //redisConfig = this.getRedisConfig(),
+    redConfig = require("url").parse(config.redis.url),
+    redisClient = redis.createClient(redConfig.port, redConfig.hostname);
 
 redisClient.auth(redisConfig.password);
 
@@ -46,7 +47,7 @@ exports.getDBConnection = function(){
 
 // returns the redis config
 exports.getRedisConfig = function(){
-  var rtg   = require("url").parse(config.redis.url);
+  var rtg = require("url").parse(config.redis.url);
   var redisConfig = { host: rtg.hostname, port: rtg.port, password: config.redis.password };
   return redisConfig;
 }
