@@ -6,12 +6,8 @@ var bcrypt = require('bcrypt'),
     pg = require('pg'), 
     config = require('../config'),
     postgres = config.postgres.connection,
-    redis = require('redis'),
-    //redisConfig = this.getRedisConfig(),
-    redConfig = require("url").parse(config.redis.url),
-    redisClient = redis.createClient(redConfig.port, redConfig.hostname);
+    redis = require('redis');
 
-redisClient.auth(config.redis.password);
 
 exports.stripHtml = function(str){
   if (str === undefined || str === null)
@@ -47,7 +43,7 @@ exports.getDBConnection = function(){
 
 // returns the redis config
 exports.getRedisConfig = function(){
-  var rtg = require("url").parse(config.redis.url);
+  var rtg   = require("url").parse(config.redis.url);
   var redisConfig = { host: rtg.hostname, port: rtg.port, password: config.redis.password };
   return redisConfig;
 }
@@ -136,33 +132,37 @@ exports.validateToken = function(req, callback){
 // see below started implementing cron job
 exports.logViews = function(video_entry, req, callback){
 
-  var ip = req.headers["x-forwarded-for"];
+  var redisConfig = this.getRedisConfig(),
+      client = redis.createClient(redisConfig.port, redisConfig.host)
+      ip = req.headers["x-forwarded-for"];
 
   try
   {
+    client.auth(redisConfig.password);
+
     if (ip === undefined)
       ip = req.connection.remoteAddress;
 
     // Only log if user ip and this entry are not logged in redis
-    redisClient.get(video_entry+"_"+ip, function(err, reply) {
+    client.get(video_entry+"_"+ip, function(err, reply) {
       if (err) return callback(err);
 
       if (reply === null) {
-        redisClient.set(video_entry+"_"+ip, new Date());
-        redisClient.incr(video_entry);
+        client.set(video_entry+"_"+ip, new Date());
+        client.incr(video_entry);
       }
     });
 
     // check the entries and persist to postgres if limits met
-    redisClient.get(video_entry, function(err, reply) {
+    client.get(video_entry, function(err, reply) {
       if (err) return callback(err);
 
       // if 10 logs already then persist them to postgres
       if (reply >= "10"){
-        redisClient.del(video_entry);
-        redisClient.keys(video_entry + "_*", function(err,replies) {
-          redisClient.del(replies);
-          redisClient.quit();
+        client.del(video_entry);
+        client.keys(video_entry + "_*", function(err,replies) {
+          client.del(replies);
+          client.quit();
         });
 
         var pClient = new pg.Client(postgres);
@@ -174,7 +174,7 @@ exports.logViews = function(video_entry, req, callback){
           });
       }
       else
-        redisClient.quit();
+        client.quit();
 
       var count = 0;
 
@@ -188,7 +188,7 @@ exports.logViews = function(video_entry, req, callback){
   catch(err)
   {
     // fail silently as this is not that important - should log though
-    return callback(err);
+    return callback(null, 0);
   }
 };
 
