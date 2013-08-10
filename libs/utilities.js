@@ -162,7 +162,7 @@ exports.logViews = function(video_entry, req, callback){
         redisClient.del(video_entry);
         redisClient.keys(video_entry + "_*", function(err,replies) {
           redisClient.del(replies);
-          client.quit();
+          redisClient.quit();
         });
 
         var pClient = new pg.Client(postgres);
@@ -174,7 +174,7 @@ exports.logViews = function(video_entry, req, callback){
           });
       }
       else
-        client.quit();
+        redisClient.quit();
 
       var count = 0;
 
