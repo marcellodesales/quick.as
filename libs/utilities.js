@@ -6,8 +6,11 @@ var bcrypt = require('bcrypt'),
     pg = require('pg'), 
     config = require('../config'),
     postgres = config.postgres.connection,
-    redis = require('redis');
+    redis = require('redis'),
+    redisConfig = this.getRedisConfig(),
+    redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
+redisClient.auth(redisConfig.password);
 
 exports.stripHtml = function(str){
   if (str === undefined || str === null)
@@ -132,36 +135,32 @@ exports.validateToken = function(req, callback){
 // see below started implementing cron job
 exports.logViews = function(video_entry, req, callback){
 
-  var redisConfig = this.getRedisConfig(),
-      client = redis.createClient(redisConfig.port, redisConfig.host)
-      ip = req.headers["x-forwarded-for"];
+  var ip = req.headers["x-forwarded-for"];
 
   try
   {
-    client.auth(redisConfig.password);
-
     if (ip === undefined)
       ip = req.connection.remoteAddress;
 
     // Only log if user ip and this entry are not logged in redis
-    client.get(video_entry+"_"+ip, function(err, reply) {
+    redisClient.get(video_entry+"_"+ip, function(err, reply) {
       if (err) return callback(err);
 
       if (reply === null) {
-        client.set(video_entry+"_"+ip, new Date());
-        client.incr(video_entry);
+        redisClient.set(video_entry+"_"+ip, new Date());
+        redisClient.incr(video_entry);
       }
     });
 
     // check the entries and persist to postgres if limits met
-    client.get(video_entry, function(err, reply) {
+    redisClient.get(video_entry, function(err, reply) {
       if (err) return callback(err);
 
       // if 10 logs already then persist them to postgres
       if (reply >= "10"){
-        client.del(video_entry);
-        client.keys(video_entry + "_*", function(err,replies) {
-          client.del(replies);
+        redisClient.del(video_entry);
+        redisClient.keys(video_entry + "_*", function(err,replies) {
+          redisClient.del(replies);
           client.quit();
         });
 

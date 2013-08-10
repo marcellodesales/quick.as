@@ -3,16 +3,16 @@ var express = require('express'),
 	casts = require('./api/casts'),
 	api = require('./api/index'),
 	site = require('./site'),
-	utilities = require('./libs/utilities');
+	utilities = require('./libs/utilities'),
 	//passport = require("passport"), 
 	//LocalStrategy = require('passport-local').Strategy,
-	//redis = require('redis');
- 
-var app = express();
+	/*redis = require('redis'),
+	redisConfig = this.getRedisConfig(),
+    redisClient = redis.createClient(redisConfig.port, redisConfig.host),*/
+    oneDay = 86400000,
+ 	app = express();
 
 module.exports = app;
-
-var oneDay = 86400000;
 
 /* Implement passport against postgres lookup
  * session will be held in redis
