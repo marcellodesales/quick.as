@@ -11,7 +11,7 @@ var bcrypt = require('bcrypt'),
     redConfig = require("url").parse(config.redis.url),
     redisClient = redis.createClient(redConfig.port, redConfig.hostname);
 
-redisClient.auth(redisConfig.password);
+redisClient.auth(config.redis.password);
 
 exports.stripHtml = function(str){
   if (str === undefined || str === null)
