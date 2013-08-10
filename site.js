@@ -115,7 +115,7 @@ exports.video = function(req, res) {
 								mp4: util.format(str, data.ownerid, data.castid, 'mp4'),
 								webm: util.format(str, data.ownerid, data.castid, 'webm'),
 								body: content,
-								views: data.views + r,
+								views: data.views,//+ r,
 								title: data.name,
 								username: data.username,
 								when: a.from(b),
