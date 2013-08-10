@@ -145,6 +145,8 @@ exports.logViews = function(video_entry, req, callback){
 
     // Only log if user ip and this entry are not logged in redis
     client.get(video_entry+"_"+ip, function(err, reply) {
+      if (err) return callback(err);
+
       if (reply === null) {
         client.set(video_entry+"_"+ip, new Date());
         client.incr(video_entry);
@@ -153,6 +155,8 @@ exports.logViews = function(video_entry, req, callback){
 
     // check the entries and persist to postgres if limits met
     client.get(video_entry, function(err, reply) {
+      if (err) return callback(err);
+
       // if 10 logs already then persist them to postgres
       if (reply >= "10"){
         client.del(video_entry);
@@ -177,14 +181,14 @@ exports.logViews = function(video_entry, req, callback){
       if (reply != null)
         count = parseInt(reply);
 
-      callback(null, count);
+      return callback(null, count);
     });
 
   }
   catch(err)
   {
     // fail silently as this is not that important - should log though
-    callback(null, 0);
+    return callback(err);
   }
 };
 

@@ -125,7 +125,9 @@ exports.publish = function(req, res) {
 			var tags = req.body.tags.split(',');
 
 			for(var tag in tags){
-				cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
+				var t = tags[tag].replace(/^\s*|\s*$/g, '');
+				if (t.length > 0)
+					cleanTags.push(t);
 			}
 
 			// Add any details to the cast table and get an id, this postgres function
@@ -161,7 +163,9 @@ exports.publishUpdate = function(req, res) {
 		var tags = req.body.tags.split(',');
 
 		for(var tag in tags){
-			cleanTags.push(tags[tag].replace(/^\s*|\s*$/g, ''));
+			var t = tags[tag].replace(/^\s*|\s*$/g, '');
+			if (t.length > 0)
+				cleanTags.push(t);
 		}
 
 		// as per publish, updatecast handles tags and all meta data normalisation
