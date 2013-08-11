@@ -3,14 +3,17 @@ var express = require('express'),
 	casts = require('./api/casts'),
 	api = require('./api/index'),
 	site = require('./site'),
+	config = require('./config'),
 	utilities = require('./libs/utilities'),
 	//passport = require("passport"), 
 	//LocalStrategy = require('passport-local').Strategy,
-	/*redis = require('redis'),
-	redisConfig = this.getRedisConfig(),
-    redisClient = redis.createClient(redisConfig.port, redisConfig.host),*/
+	redis = require('redis'),
+	redisConfig = require("url").parse(config.redis.url)
+    redisClient = redis.createClient(redisConfig.port, redisConfig.hostname),
     oneDay = 86400000,
  	app = express();
+
+redisClient.auth(config.redis.password);
 
 module.exports = app;
 
@@ -41,22 +44,17 @@ passport.deserializeUser(function(email, done) {
     });
 });*/
 
-/*var redisConfig = this.getRedisConfig(),
-    redisClient = redis.createClient(redisConfig.port, redisConfig.host);
-
-redisClient.auth(redisConfig.password);*/
-
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 
-/*app.use(express.session({
-  store: redisClient),
-  secret: utilities.getSessionSecret()
-}));
-app.use(passport.initialize());
-app.use(passport.session());*/
+//app.use(express.session({
+//  store: redisClient,
+//  secret: config.sessionSecret
+//}));
+//app.use(passport.initialize());
+//app.use(passport.session());
 
 app.use(express.compress());
 app.use(express.favicon(__dirname + '/public/favicon.ico'));
@@ -79,7 +77,7 @@ app.use(function(err, req, res, next){
 /* Site */
 
 app.get('/', site.root);
-app.get('/embed/:entry', site.embed);
+app.get('/embed/:entry', site.embed(redisClient));
 
 /* API */
 
@@ -91,7 +89,6 @@ app.post('/api/v1/users/signin', users.signin);
 app.put('/api/v1/users/signup', users.signup);
 app.get('/api/v1/users/userbytoken', users.userByToken);
 app.get('/api/v1/users/usercasts', users.userCasts);
-//app.get('/api/v1/users/setup', users.setup); // Setup / tests
 
 // Casts
 app.get('/api/v1/casts', casts.index);
@@ -99,11 +96,10 @@ app.put('/api/v1/casts/publish', casts.publish);
 app.post('/api/v1/casts/publish/complete', casts.publishComplete);
 app.post('/api/v1/casts/publish/update', casts.publishUpdate);
 app.get('/api/v1/casts/publish/encode', casts.encodeRequest);
-//app.get('/api/v1/casts/setup', casts.setup); // Setup / tests
 
 /* Site Video */
 
-app.get('/:entry', site.video);
+app.get('/:entry', site.video(redisClient));
 
 var port = process.env.PORT || 5000;
 
