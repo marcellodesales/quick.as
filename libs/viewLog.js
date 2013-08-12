@@ -21,6 +21,15 @@ exports.viewLog = function(video_entry, redisClient, req, callback){
     if (ip === undefined)
       ip = req.connection.remoteAddress;
 
+    if (ip === undefined || ip === null)
+      return callback("Null IP sent");
+
+    if (ip.length > 45)
+      return callback("IP address incorrect length");
+
+    if (video_entry.length > 50)
+      return callback("QuickCast id incorrect length")
+
     // Only log if user ip and this entry are not logged in redis
     redisClient.get(video_entry+"_"+ip, function(err, reply) {
       if (err) return callback(err);
