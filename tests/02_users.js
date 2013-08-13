@@ -31,8 +31,8 @@ describe('Put /api/v1/users/signup success', function(){
         .expect(200)
         .expect('Content-Type', /json/)
         .end(function(err, res){
-          if (err) return done(err);
-          done()
+            if (err) return done(err);
+            done()
         });
     });
 });
