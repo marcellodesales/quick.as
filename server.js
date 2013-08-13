@@ -77,7 +77,7 @@ app.use(function(err, req, res, next){
 /* Site */
 
 app.get('/', site.root);
-app.get('/embed/:entry', site.embed(redisClient));
+app.get('/embed/:entry', site.embed);
 
 /* API */
 
@@ -99,7 +99,7 @@ app.get('/api/v1/casts/publish/encode', casts.encodeRequest);
 
 /* Site Video */
 
-app.get('/:entry', site.video(redisClient));
+app.get('/:entry', site.video);
 
 var port = process.env.PORT || 5000;
 

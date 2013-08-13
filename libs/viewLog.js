@@ -1,6 +1,9 @@
 var config = require('../config'),
     pg = require('pg'),
-    pgClient = new pg.Client(config.postgres.connection);
+    pgClient = new pg.Client(config.postgres.connection),
+    redis = require('redis'),
+    redisConfig = require("url").parse(config.redis.url)
+    redisClient = redis.createClient(redisConfig.port, redisConfig.hostname);
 
 // Log views - initially to redis and then persisted to postgres
 // General benefits of writing to redis before persisting to postgres
@@ -12,9 +15,10 @@ var config = require('../config'),
 // Better approach would be if redis - postgres was handled automaticallu through invalidation or cron job
 // potentiallty: https://github.com/ncb000gt/node-cron
 // see below started implementing cron job
-exports.viewLog = function(video_entry, redisClient, req, callback){
+exports.viewLog = function(video_entry, req, callback){
 
   var ip = req.headers["x-forwarded-for"];
+  redisClient.auth(config.redis.password);
 
   try
   {
@@ -32,7 +36,10 @@ exports.viewLog = function(video_entry, redisClient, req, callback){
 
     // Only log if user ip and this entry are not logged in redis
     redisClient.get(video_entry+"_"+ip, function(err, reply) {
-      if (err) return callback(err);
+      if (err) {
+        redisClient.quit();
+        return callback(err);
+      }
 
       if (reply === null) {
         redisClient.set(video_entry+"_"+ip, new Date());
@@ -42,13 +49,17 @@ exports.viewLog = function(video_entry, redisClient, req, callback){
 
     // check the entries and persist to postgres if limits met
     redisClient.get(video_entry, function(err, reply) {
-      if (err) return callback(err);
+      if (err) {
+        redisClient.quit();
+        return callback(err);
+      }
 
       // if 10 logs already then persist them to postgres
       if (reply >= "10"){
         redisClient.del(video_entry);
         redisClient.keys(video_entry + "_*", function(err,replies) {
           redisClient.del(replies);
+          redisClient.quit();
         });
 
         pgClient.connect();
@@ -57,6 +68,10 @@ exports.viewLog = function(video_entry, redisClient, req, callback){
           .on('end', function() {
             pgClient.end();
           });
+      }
+      else
+      {
+        redisClient.quit();
       }
 
       var count = 0;
