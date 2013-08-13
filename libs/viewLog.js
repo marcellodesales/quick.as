@@ -2,7 +2,7 @@ var config = require('../config'),
     pg = require('pg'),
     pgClient = new pg.Client(config.postgres.connection),
     redis = require('redis'),
-    redisConfig = require("url").parse(config.redis.url)
+    redisConfig = require("url").parse(config.redis.url),
     redisClient = redis.createClient(redisConfig.port, redisConfig.hostname);
 
 // Log views - initially to redis and then persisted to postgres
