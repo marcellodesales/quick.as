@@ -13,7 +13,7 @@ var express = require('express'),
     oneDay = 86400000,
  	app = express();
 
-redisClient.auth(config.redis.password);
+//redisClient.auth(config.redis.password);
 
 module.exports = app;
 
