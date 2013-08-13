@@ -1,4 +1,5 @@
-var config = require('../config'),
+var jwt = require('jwt-simple'),
+    config = require('../config'),
     pg = require('pg');
 
 // validates the app token - could be better as middleware

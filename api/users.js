@@ -142,6 +142,7 @@ exports.signin = function(req, res) {
 exports.userByToken = function(req, res) {
 	token.validateToken(req, function(err, result) {
 		if (err) {
+			console.log(err)
 			res.json({ status: 401, message: err }, 401);
 			return;
 		}
