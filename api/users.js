@@ -74,7 +74,7 @@ exports.signup = function(req, res) {
 				pgClient.query("INSERT INTO users(created,firstname,lastname,email,username,password,mailinglist) VALUES ($1,$2,$3,$4,$5,$6,$7)", [new Date(), firstname, lastname, email, username, pwd, mailinglist])
 					.on('end', function(){
 						pgClient.end();
-						var token = jwt.encode({ email: email }, utilities.getSecret());
+						var token = jwt.encode({ email: email }, config.bcrypt.secret);
 
 						// send a postmark confirmation mail
 						var postmark = require("postmark")(utilities.getPostmark().apiKey);

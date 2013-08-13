@@ -1,6 +1,5 @@
 // this is currently a bit of a dumping ground for functions
 // some of these could be re-thought and moved - some should be written as middleware
-
 var bcrypt = require('bcrypt'), 
     jwt = require('jwt-simple'), 
     config = require('../config');
@@ -17,11 +16,6 @@ exports.getPostmark = function(){
   return config.postmark;
 }
 
-// returns the bcrypt secret
-exports.getSecret = function(){
-  return config.bcrypt.secret;
-}
-
 // returns the amazon config
 exports.getAmazonDetails = function(){
   return config.amazon;
@@ -29,7 +23,7 @@ exports.getAmazonDetails = function(){
 
 // returns an encoded token
 exports.encodeToken = function(payload){
-  return jwt.encode(payload, this.getSecret());
+  return jwt.encode(payload, config.bcrypt.secret);
 }
 
 // returns an encrypted password

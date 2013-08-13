@@ -12,7 +12,7 @@ exports.validateToken = function(req, callback){
 
   var decoded = null;
 
-  try{ decoded = jwt.decode(token, this.getSecret()); }catch(e){ return callback(e); }
+  try{ decoded = jwt.decode(token, config.bcrypt.secret); }catch(e){ return callback(e); }
 
   if (decoded === undefined || decoded === null)
     return callback("Invalid token, authentication failed");
