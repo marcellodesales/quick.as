@@ -7,9 +7,9 @@ var express = require('express'),
 	utilities = require('./libs/utilities'),
 	//passport = require("passport"), 
 	//LocalStrategy = require('passport-local').Strategy,
-	redis = require('redis'),
-	redisConfig = require("url").parse(config.redis.url)
-    redisClient = redis.createClient(redisConfig.port, redisConfig.hostname),
+	//redis = require('redis'),
+	//redisConfig = require("url").parse(config.redis.url)
+    //redisClient = redis.createClient(redisConfig.port, redisConfig.hostname),
     oneDay = 86400000,
  	app = express();
 

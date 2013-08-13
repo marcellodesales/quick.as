@@ -1,8 +1,7 @@
 var config = require('../config'),
     pg = require('pg'),
     pgClient = new pg.Client(config.postgres.connection),
-    redis = require('redis'),
-    redisConfig = require("url").parse(config.redis.url);
+    redis = require('redis');
 
 // Log views - initially to redis and then persisted to postgres
 // General benefits of writing to redis before persisting to postgres
@@ -16,79 +15,72 @@ var config = require('../config'),
 // see below started implementing cron job
 exports.viewLog = function(video_entry, req, callback){
 
-  var ip = req.headers["x-forwarded-for"],
+  var ip = req.headers["x-forwarded-for"];  
+  
+  if (ip === undefined)
+    ip = req.connection.remoteAddress;
+
+  if (ip === undefined || ip === null)
+    return callback("Null IP sent");
+
+  if (ip.length > 45)
+    return callback("IP address incorrect length");
+
+  if (video_entry.length > 50)
+    return callback("QuickCast id incorrect length")
+
+  var redisConfig = require("url").parse(config.redis.url),
       redisClient = redis.createClient(redisConfig.port, redisConfig.hostname);
 
-  redisClient.auth(config.redis.password);   
-  
-  try
-  {
-    if (ip === undefined)
-      ip = req.connection.remoteAddress;
+  redisClient.auth(config.redis.password); 
 
-    if (ip === undefined || ip === null)
-      return callback("Null IP sent");
+  // Only log if user ip and this entry are not logged in redis
+  redisClient.get(video_entry+"_"+ip, function(err, reply) {
+    if (err) {
+      redisClient.quit();
+      return callback(err);
+    }
 
-    if (ip.length > 45)
-      return callback("IP address incorrect length");
+    if (reply === null) {
+      redisClient.set(video_entry+"_"+ip, new Date());
+      redisClient.incr(video_entry);
+    }
+  });
 
-    if (video_entry.length > 50)
-      return callback("QuickCast id incorrect length")
+  // check the entries and persist to postgres if limits met
+  redisClient.get(video_entry, function(err, reply) {
+    if (err) {
+      redisClient.quit();
+      return callback(err);
+    }
 
-    // Only log if user ip and this entry are not logged in redis
-    redisClient.get(video_entry+"_"+ip, function(err, reply) {
-      if (err) {
+    // if 10 logs already then persist them to postgres
+    if (reply >= "10"){
+      redisClient.del(video_entry);
+      redisClient.keys(video_entry + "_*", function(err,replies) {
+        redisClient.del(replies);
         redisClient.quit();
-        return callback(err);
-      }
+      });
 
-      if (reply === null) {
-        redisClient.set(video_entry+"_"+ip, new Date());
-        redisClient.incr(video_entry);
-      }
-    });
+      pgClient.connect();
 
-    // check the entries and persist to postgres if limits met
-    redisClient.get(video_entry, function(err, reply) {
-      if (err) {
-        redisClient.quit();
-        return callback(err);
-      }
-
-      // if 10 logs already then persist them to postgres
-      if (reply >= "10"){
-        redisClient.del(video_entry);
-        redisClient.keys(video_entry + "_*", function(err,replies) {
-          redisClient.del(replies);
-          redisClient.quit();
+      pgClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [parseInt(reply), video_entry])
+        .on('end', function() {
+          pgClient.end();
         });
+    }
+    else
+    {
+      redisClient.quit();
+    }
 
-        pgClient.connect();
+    var count = 0;
 
-        pgClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [parseInt(reply), video_entry])
-          .on('end', function() {
-            pgClient.end();
-          });
-      }
-      else
-      {
-        redisClient.quit();
-      }
+    if (reply != null)
+      count = parseInt(reply);
 
-      var count = 0;
-
-      if (reply != null)
-        count = parseInt(reply);
-
-      return callback(null, count);
-    });
-
-  }
-  catch(err)
-  {
-    // fail silently as this is not that important - should log though
-    return callback(null, 0);
-  }
+    return callback(null, count);
+  });
 };
 
 // Fire and forget - this will override some of the functionality above
