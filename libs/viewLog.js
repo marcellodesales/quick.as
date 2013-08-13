@@ -1,6 +1,5 @@
 var config = require('../config'),
     pg = require('pg'),
-    pgClient = new pg.Client(config.postgres.connection),
     redis = require('redis');
 
 // Log views - initially to redis and then persisted to postgres
@@ -62,6 +61,7 @@ exports.viewLog = function(video_entry, req, callback){
         redisClient.quit();
       });
 
+      var pgClient = new pg.Client(config.postgres.connection);
       pgClient.connect();
 
       pgClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [parseInt(reply), video_entry])
