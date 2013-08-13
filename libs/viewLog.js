@@ -2,8 +2,7 @@ var config = require('../config'),
     pg = require('pg'),
     pgClient = new pg.Client(config.postgres.connection),
     redis = require('redis'),
-    redisConfig = require("url").parse(config.redis.url),
-    redisClient = redis.createClient(redisConfig.port, redisConfig.hostname);
+    redisConfig = require("url").parse(config.redis.url);
 
 // Log views - initially to redis and then persisted to postgres
 // General benefits of writing to redis before persisting to postgres
@@ -17,9 +16,11 @@ var config = require('../config'),
 // see below started implementing cron job
 exports.viewLog = function(video_entry, req, callback){
 
-  var ip = req.headers["x-forwarded-for"];
-  redisClient.auth(config.redis.password);
+  var ip = req.headers["x-forwarded-for"],
+      redisClient = redis.createClient(redisConfig.port, redisConfig.hostname);
 
+  redisClient.auth(config.redis.password);   
+  
   try
   {
     if (ip === undefined)
