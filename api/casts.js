@@ -50,9 +50,11 @@ exports.publish = function(req, res) {
 					cleanTags.push(t);
 			}
 
+			var frmName = req.body.name.substring(0, 50);
+
 			// Add any details to the cast table and get an id, this postgres function
 			// handles normalisation of tags, etc
-			pgClient.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.body.description, req.body.name, req.body.intro, req.body.outro, cleanTags.join(",")])
+			pgClient.query("SELECT AddCast($1,$2,$3,$4,$5,$6,$7);", [result.user.userid, new Date(), req.body.description, frmName, req.body.intro, req.body.outro, cleanTags.join(",")])
 				.on('row', function(r){
 					response["cast"] = r;
 				})
@@ -87,8 +89,10 @@ exports.publishUpdate = function(req, res) {
 				cleanTags.push(t);
 		}
 
+		var frmName = req.body.name.substring(0, 50);
+
 		// as per publish, updatecast handles tags and all meta data normalisation
-		pgClient.query("SELECT UpdateCast($1,$2,$3,$4,$5,$6);", [req.body.description, req.body.name, req.body.intro, req.body.outro, req.body.castid, cleanTags.join(",")])
+		pgClient.query("SELECT UpdateCast($1,$2,$3,$4,$5,$6);", [req.body.description, frmName, req.body.intro, req.body.outro, req.body.castid, cleanTags.join(",")])
 			.on('row', function(r){
 				response["cast"] = r;
 			})
