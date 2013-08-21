@@ -16,7 +16,7 @@ exports.viewLog = function(video_entry, req, callback){
 
   var ip = req.headers["x-forwarded-for"];  
   
-  if (ip === undefined)
+  if (ip === undefined || ip === null)
     ip = req.connection.remoteAddress;
 
   if (ip === undefined || ip === null)
@@ -56,7 +56,11 @@ exports.viewLog = function(video_entry, req, callback){
     // if 10 logs already then persist them to postgres
     if (reply >= "10"){
       redisClient.del(video_entry);
-      redisClient.keys(video_entry + "_*", function(err,replies) {
+      redisClient.keys(video_entry + "_*", function(err2,replies) {
+        if (err2) {
+          redisClient.quit();
+          return callback(err2);
+        }
         redisClient.del(replies);
         redisClient.quit();
       });

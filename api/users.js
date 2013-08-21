@@ -99,9 +99,12 @@ exports.signup = function(req, res) {
 
 // handles the user signin
 exports.signin = function(req, res) {
-	var username = req.headers.username,
-		password = req.headers.password,
+	var username = req.body.username,
+		password = req.body.password,
 		error = { status: 401, message: "Authentication failed for supplied credentials" };
+
+	console.log("body: " + req.body.username + " " + req.body.password);
+	console.log("headers: " + req.headers.token);
 
 	if (username === undefined || password === undefined) {
 		res.json(error, 401);
