@@ -79,6 +79,9 @@ app.use(function(err, req, res, next){
 app.get('/', site.root);
 app.get('/embed/:entry', site.embed);
 
+//app.use('/reset-password', site.resetPassword);
+//app.use('/new-password/:code', site.confirmNewPassword);
+
 /* API */
 
 app.get('/api/v1', api.index);

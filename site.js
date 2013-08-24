@@ -23,6 +23,28 @@ exports.root = function(req, res) {
 	res.redirect("http://quickcast.io");
 };
 
+// Request password reset
+exports.resetPassword = function(req, res) {
+	
+	if (req.body != null)
+	{
+
+	}
+
+	res.render('reset-password');
+};
+
+// Confirm new password
+exports.confirmNewPassword = function(req, res) {
+	
+	if (req.body != null)
+	{
+		
+	}
+
+	res.render('new-password');
+};
+
 // quick.as video
 exports.video = function(req, res) {
 	var video_entry = req.params.entry;
