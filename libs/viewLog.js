@@ -41,12 +41,14 @@ exports.viewLog = function(video_entry, req, callback){
     }
 
     if (reply === null) {
-      redisClient.set(video_entry+"_"+ip, new Date(), function(err1, reply2){
+      redisClient.set(video_entry+"_"+ip, new Date());
+      redisClient.incr(video_entry);
+      /*redisClient.set(video_entry+"_"+ip, new Date(), function(err1, reply2){
         if (err1)
           console.log(err1);
         else
           redisClient.incr(video_entry);
-      });
+      });*/
     }
   });
 
