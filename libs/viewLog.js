@@ -31,6 +31,10 @@ exports.viewLog = function(video_entry, req, callback){
   var redisConfig = require("url").parse(config.redis.url),
       redisClient = redis.createClient(redisConfig.port, redisConfig.hostname);
 
+  redisClient.on("error", function (err) {
+    return callback(err);
+  });
+
   redisClient.auth(config.redis.password); 
 
   // Only log if user ip and this entry are not logged in redis
@@ -41,14 +45,13 @@ exports.viewLog = function(video_entry, req, callback){
     }
 
     if (reply === null) {
-      redisClient.set(video_entry+"_"+ip, new Date());
-      redisClient.incr(video_entry);
-      /*redisClient.set(video_entry+"_"+ip, new Date(), function(err1, reply2){
-        if (err1)
-          console.log(err1);
-        else
-          redisClient.incr(video_entry);
-      });*/
+      redisClient.set(video_entry+"_"+ip, new Date(), function(err2) {
+        if (err2) {
+          redisClient.quit();
+          return callback(err2);
+        }
+        redisClient.incr(video_entry);
+      });
     }
   });
 
@@ -67,8 +70,12 @@ exports.viewLog = function(video_entry, req, callback){
           redisClient.quit();
           return callback(err2);
         }
-        redisClient.del(replies);
-        redisClient.quit();
+        redisClient.del(replies, function(err3) {
+          redisClient.quit();
+          if (err3) {
+            return callback(err3);
+          }
+        });
       });
 
       var pgClient = new pg.Client(config.postgres.connection);
