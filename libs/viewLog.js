@@ -14,6 +14,8 @@ exports.viewLog = function(video_entry, req, callback){
   if (req.session.entry === entry)
     return callback(null, 0);
 
+  req.session.entry = entry;
+
   var pgClient = new pg.Client(config.postgres.connection);
       pgClient.connect();
 
