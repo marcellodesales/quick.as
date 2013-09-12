@@ -10,7 +10,7 @@ config.postmark = {};
 
 config.postgres.connection = process.env.DATABASE_URL;
 
-config.sessionSecret = process.env.SESSION_SECRET;
+config.sessionSecret = process.env.SESSION_SECRET || "yolo";
 
 config.amazon.accessKeyId = process.env.AWS_KEY;
 config.amazon.secretAccessKey = process.env.AWS_SECRET;

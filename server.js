@@ -56,6 +56,9 @@ app.use(express.methodOverride());
 //app.use(passport.initialize());
 //app.use(passport.session());
 
+app.use(express.cookieParser());
+app.use(express.session({secret: config.sessionSecret}));
+
 app.use(express.compress());
 app.use(express.favicon(__dirname + '/public/favicon.ico'));
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
