@@ -1,5 +1,5 @@
 var config = require('../config'),
-    pg = require('pg'),
+    pg = require('pg');
 
 // This is a simple fix as having so many issues with redis
 exports.viewLog = function(video_entry, req, callback){
