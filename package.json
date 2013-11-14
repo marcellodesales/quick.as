@@ -22,6 +22,7 @@
     "postmark": "0.1.8",
     "cron": "1.0.1",
     "passport": "0.1.17",
-    "connect-redis": "1.4.6"
+    "connect-redis": "1.4.6",
+    "redis": "0.9.0"
   }
 }
