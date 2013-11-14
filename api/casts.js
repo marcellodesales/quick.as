@@ -5,10 +5,9 @@ var jwt = require('jwt-simple'),
 	amazonDetails = utilities.getAmazonDetails(),
 	util = require('util'),
 	Hashids = require('hashids'),
-	config = require('../config'),
     pg = require('pg');
 
-AWS.config.update({accessKeyId: amazonDetails.accessKeyId, secretAccessKey: amazonDetails.secretAccessKey, region: amazonDetails.region});
+AWS.config.update({accessKeyId: process.env.AWS_KEY, secretAccessKey: process.env.AWS_SECRET, region: process.env.AWS_REGION});
 
 // Publish, called as soon as the user confirms they wish to publish their quickcast
 // Expects a valid user token and responds with a castid and a temporary 
@@ -31,7 +30,7 @@ exports.publish = function(req, res) {
 				return;
 			}
 
-			var pgClient = new pg.Client(config.postgres.connection);
+			var pgClient = new pg.Client(process.env.DATABASE_URL);
 			pgClient.connect();
 
 			var response = {};
@@ -75,7 +74,7 @@ exports.publishUpdate = function(req, res) {
 			return;
 		}
 
-		var pgClient = new pg.Client(config.postgres.connection);
+		var pgClient = new pg.Client(process.env.DATABASE_URL);
 		pgClient.connect();
 
 		var response = {};
@@ -100,6 +99,70 @@ exports.publishUpdate = function(req, res) {
 				pgClient.end();
 				res.json(response);
 			});
+	});
+};
+
+// encode request. called once the raw mp4 has been uploaded and fires amazon encoding
+exports.encodeRequestWindows = function(req, res) {
+	if (req.headers.castid === undefined) {
+		res.json({ status: 400, message: "Invalid castid" }, 400); 
+		return;
+	}
+
+	// Validate user token - this could be middleware
+	token.validateToken(req, function(err, result){
+		if (err) {
+			res.json({ status: 401, message: err }, 401);
+			return;
+		}
+
+		// fire a message to amazon and start transcoding the video into mp4 and webm
+		var str = '%s/%s/quickcast.%s';
+		var strSmall = '%s/%s/quickcast-small.%s';
+
+		var et = new AWS.ElasticTranscoder();
+
+		var params = { 
+			'PipelineId': amazonDetails.pipelineId,
+			'Input': {
+				'Key': util.format(str, result.user.userid, req.headers.castid, 'xesc'),
+				'FrameRate': 'auto',
+				'Resolution': 'auto',
+				'AspectRatio': 'auto',
+				'Interlaced': 'auto',
+				'Container': 'auto'
+			},
+			'Outputs': [
+				{
+					'Key': util.format(str, result.user.userid, req.headers.castid, 'mp4'),
+					'PresetId': amazonDetails.mp4,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				},
+				{
+					'Key': util.format(strSmall, result.user.userid, req.headers.castid, 'mp4'),
+					'PresetId': amazonDetails.mp4small,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				},
+				{
+					'Key': util.format(str, result.user.userid, req.headers.castid, 'webm'),
+					'PresetId': amazonDetails.webM,
+					'ThumbnailPattern': "",
+					'Rotate': '0'
+				}
+			]
+		};
+
+		// transcode
+		et.createJob(params, function(err1, data1){
+			if (err1){
+				res.json({ status: 500, message: err1 }, 500);
+				return;
+			}
+
+			res.json({ status: 200, message: "Encoding requested" }, 200);
+		});
 	});
 };
 
@@ -175,7 +238,7 @@ exports.publishComplete = function(req, res) {
 			return;
 		}
 
-		var pgClient = new pg.Client(config.postgres.connection);
+		var pgClient = new pg.Client(process.env.DATABASE_URL);
 		pgClient.connect();
 
 		// get a hash for our unique video url

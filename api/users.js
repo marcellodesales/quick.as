@@ -2,7 +2,6 @@ var jwt = require('jwt-simple'),
 	utilities = require('../libs/utilities'),
 	token = require('../libs/validateToken'),
 	Q = require('q'),
-	config = require('../config'),
     pg = require('pg');
 
 // handles the user signup
@@ -34,7 +33,7 @@ exports.signup = function(req, res) {
 		return;
 	}
 
-	var pgClient = new pg.Client(config.postgres.connection);
+	var pgClient = new pg.Client(process.env.DATABASE_URL);
 	pgClient.connect();
 
 	// validate the email doesn't already exist within postgres
@@ -74,7 +73,7 @@ exports.signup = function(req, res) {
 				pgClient.query("INSERT INTO users(created,firstname,lastname,email,username,password,mailinglist) VALUES ($1,$2,$3,$4,$5,$6,$7)", [new Date(), firstname, lastname, email, username, pwd, mailinglist])
 					.on('end', function(){
 						pgClient.end();
-						var token = jwt.encode({ email: email }, config.bcrypt.secret);
+						var token = jwt.encode({ email: email }, process.env.BCRYPT_SECRET);
 
 						// send a postmark confirmation mail
 						var postmark = require("postmark")(utilities.getPostmark().apiKey);
@@ -111,7 +110,7 @@ exports.signin = function(req, res) {
 		return;
 	}
 
-	var pgClient = new pg.Client(config.postgres.connection);
+	var pgClient = new pg.Client(process.env.DATABASE_URL);
 	pgClient.connect();
 
 	// query postgres
@@ -162,7 +161,7 @@ exports.userCasts = function(req, res) {
 			return;
 		}
 
-		var pgClient = new pg.Client(config.postgres.connection);
+		var pgClient = new pg.Client(process.env.DATABASE_URL);
 		pgClient.connect();
 		
 		pgClient.query("SELECT * FROM casts WHERE ownerid = $1 AND published = true ORDER BY created DESC LIMIT 10", [result.user.userid], function(e, casts){

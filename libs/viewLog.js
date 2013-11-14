@@ -1,7 +1,6 @@
-var config = require('../config'),
-    pg = require('pg');
+var pg = require('pg');
 
-// This is a simple fix as having so many issues with redis
+// Just using basic session for now
 exports.viewLog = function(video_entry, req, callback){
 
   var ip = req.headers["x-forwarded-for"];  
@@ -16,7 +15,7 @@ exports.viewLog = function(video_entry, req, callback){
 
   req.session.entry = entry;
 
-  var pgClient = new pg.Client(config.postgres.connection);
+  var pgClient = new pg.Client(process.env.DATABASE_URL);
       pgClient.connect();
 
   pgClient.query("UPDATE casts SET views = views + $1 WHERE lower(casts.uniqueid) = $2", [1, video_entry])

@@ -16,3 +16,25 @@ markedOpts = {
 	smartypants: false,
 	langPrefix: 'lang-'
 }
+
+// Request password reset
+exports.resetPassword = function(req, res) {
+	
+	if (req.body != null)
+	{
+
+	}
+
+	res.render('reset-password');
+};
+
+// Confirm new password
+exports.confirmNewPassword = function(req, res) {
+	
+	if (req.body != null)
+	{
+		
+	}
+
+	res.render('new-password');
+};

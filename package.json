@@ -1,6 +1,6 @@
 {
-  "name": "deko",
-  "description": "deko",
+  "name": "QuickCast",
+  "description": "QuickCast API and Quick.as viewer v1",
   "version": "0.0.1",
   "dependencies": {
     "bcrypt": "0.7.6",
@@ -15,13 +15,13 @@
     "supertest": "0.7.0",
     "q": "0.9.6",
     "crypto": "0.0.3",
-    "redis": "0.8.4",
     "marked": "0.2.9",
     "moment": "2.1.0",
     "aws2js": "0.8.3",
     "hashids": "0.1.4",
     "postmark": "0.1.8",
     "cron": "1.0.1",
-    "passport": "0.1.17"
+    "passport": "0.1.17",
+    "connect-redis": "1.4.6"
   }
 }

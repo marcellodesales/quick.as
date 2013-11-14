@@ -1,8 +1,7 @@
 // this is currently a bit of a dumping ground for functions
 // some of these could be re-thought and moved - some should be written as middleware
 var bcrypt = require('bcrypt'), 
-    jwt = require('jwt-simple'), 
-    config = require('../config');
+    jwt = require('jwt-simple');
 
 exports.stripHtml = function(str){
   if (str === undefined || str === null)
@@ -13,17 +12,30 @@ exports.stripHtml = function(str){
 
 // returns the postmark config
 exports.getPostmark = function(){
-  return config.postmark;
+  var postmark = {};
+  postmark.apiKey = process.env.POSTMARK_API_KEY;
+  postmark.from = process.env.POSTMARK_FROM;
+  return postmark;
 }
 
 // returns the amazon config
 exports.getAmazonDetails = function(){
-  return config.amazon;
+  var amazon = {};
+  amazon.accessKeyId = process.env.AWS_KEY;
+  amazon.secretAccessKey = process.env.AWS_SECRET;
+  amazon.region = process.env.AWS_REGION;
+  amazon.sourceBucket = process.env.AWS_BUCKET_SOURCE;
+  amazon.destinationBucket = process.env.AWS_BUCKET;
+  amazon.pipelineId = process.env.AWS_PIPELINE_ID;
+  amazon.webM = process.env.AWS_WEBM;
+  amazon.mp4 = process.env.AWS_MP4;
+  amazon.mp4small = process.env.AWS_MP4SMALL;
+  return amazon;
 }
 
 // returns an encoded token
 exports.encodeToken = function(payload){
-  return jwt.encode(payload, config.bcrypt.secret);
+  return jwt.encode(payload, process.env.BCRYPT_SECRET);
 }
 
 // returns an encrypted password

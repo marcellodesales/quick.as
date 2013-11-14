@@ -3,61 +3,34 @@ var express = require('express'),
 	casts = require('./api/casts'),
 	api = require('./api/index'),
 	site = require('./site'),
-	config = require('./config'),
 	utilities = require('./libs/utilities'),
-	//passport = require("passport"), 
-	//LocalStrategy = require('passport-local').Strategy,
-	//redis = require('redis'),
-	//redisConfig = require("url").parse(config.redis.url)
-    //redisClient = redis.createClient(redisConfig.port, redisConfig.hostname),
     oneDay = 86400000,
- 	app = express();
-
-//redisClient.auth(config.redis.password);
+ 	app = express(),
+ 	RedisStore = require('connect-redis')(express);
 
 module.exports = app;
 
-/* Implement passport against postgres lookup
- * session will be held in redis
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function(err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+var redis, rtg;
 
-passport.serializeUser(function(user, done) {
-    done(null, user.email);
-});
-
-passport.deserializeUser(function(email, done) {
-    User.findOne({email:email}, function(err, user) {
-        done(err, user);
-    });
-});*/
+if (process.env.REDISCLOUD_URL) {
+	rtg = require('url').parse(process.env.REDISCLOUD_URL);
+	redis = require('redis').createClient(rtg.port, rtg.hostname);
+	redis.auth(rtg.auth.split(':')[1]);
+} else {
+	redis = require("redis").createClient();
+} 
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-
-//app.use(express.session({
-//  store: redisClient,
-//  secret: config.sessionSecret
-//}));
-//app.use(passport.initialize());
-//app.use(passport.session());
-
 app.use(express.cookieParser());
-app.use(express.session({secret: config.sessionSecret}));
+
+app.use(express.session({
+	store: new RedisStore({client: redis}),
+	secret: process.env.SESSION_SECRET,
+	maxAge: new Date(Date.now() + 7200)//7200000)
+}));
 
 app.use(express.compress());
 app.use(express.favicon(__dirname + '/public/favicon.ico'));
@@ -102,21 +75,19 @@ app.put('/api/v1/casts/publish', casts.publish);
 app.post('/api/v1/casts/publish/complete', casts.publishComplete);
 app.post('/api/v1/casts/publish/update', casts.publishUpdate);
 app.get('/api/v1/casts/publish/encode', casts.encodeRequest);
+app.get('/api/v1/casts/publish/encode-windows', casts.encodeRequestWindows);
 
 /* Site Video */
 
 app.get('/:entry', site.video);
+
+app.use(function(req,res) { 
+    res.render('404', 404);
+});
 
 var port = process.env.PORT || 5000;
 
 // Start the server
 app.listen(port, function() {
 	console.log('running on', port);
-	// Potentially activate this for a better implementation
-	// managing log persistance
-	/*var cronJob = require('cron').CronJob;
-	var date = new Date();
-	new cronJob('59 * * * * *', function(){
-		utilities.persistRedisLogsToPostgres(date);
-	}, null, true, null);*/
 });

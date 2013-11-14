@@ -3,7 +3,6 @@ var utilities = require('./libs/utilities'),
     marked = require('marked'),
     moment = require('moment'),
     util = require('util'),
-    config = require('./config'),
     pg = require('pg');
 
 // Marked (markdown) settings
@@ -23,33 +22,11 @@ exports.root = function(req, res) {
 	res.redirect("http://quickcast.io");
 };
 
-// Request password reset
-exports.resetPassword = function(req, res) {
-	
-	if (req.body != null)
-	{
-
-	}
-
-	res.render('reset-password');
-};
-
-// Confirm new password
-exports.confirmNewPassword = function(req, res) {
-	
-	if (req.body != null)
-	{
-		
-	}
-
-	res.render('new-password');
-};
-
 // quick.as video
 exports.video = function(req, res) {
 	var video_entry = req.params.entry;
 
-	var pgClient = new pg.Client(config.postgres.connection);
+	var pgClient = new pg.Client(process.env.DATABASE_URL);
     pgClient.connect();
 
     // get the cast
@@ -164,7 +141,7 @@ exports.video = function(req, res) {
 exports.embed = function(req, res) {
 	var video_entry = req.params.entry;
 
-	var pgClient = new pg.Client(config.postgres.connection);
+	var pgClient = new pg.Client(process.env.DATABASE_URL);
     pgClient.connect();
 
     pgClient.query("SELECT casts.*, users.username FROM casts INNER JOIN users ON (casts.ownerid = users.userid) WHERE lower(casts.uniqueid) = $1 AND casts.published = true", [video_entry.toLowerCase()], function(err1, result1){
