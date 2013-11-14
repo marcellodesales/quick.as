@@ -22,9 +22,9 @@ if (process.env.REDISCLOUD_URL) {
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+app.use(express.cookieParser());
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.cookieParser());
 
 app.use(express.session({
 	store: new RedisStore({client: redis}),
@@ -45,10 +45,10 @@ app.use(function(req, res, next) {
 		next();
 });
 
-app.use(function(err, req, res, next){
+/*app.use(function(err, req, res, next){
 	res.status(500);
 	res.render('500', { error: err });
-});
+});*/
 
 /* Site */
 
@@ -59,18 +59,17 @@ app.get('/embed/:entry', site.embed);
 //app.use('/new-password/:code', site.confirmNewPassword);
 
 /* API */
-
-app.get('/api/v1', api.index);
+//app.get('/api/v1', api.index);
 
 // Users
-app.get('/api/v1/users', users.index);
+//app.get('/api/v1/users', users.index);
 app.post('/api/v1/users/signin', users.signin);
 app.put('/api/v1/users/signup', users.signup);
 app.get('/api/v1/users/userbytoken', users.userByToken);
 app.get('/api/v1/users/usercasts', users.userCasts);
 
 // Casts
-app.get('/api/v1/casts', casts.index);
+//app.get('/api/v1/casts', casts.index);
 app.put('/api/v1/casts/publish', casts.publish);
 app.post('/api/v1/casts/publish/complete', casts.publishComplete);
 app.post('/api/v1/casts/publish/update', casts.publishUpdate);

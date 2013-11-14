@@ -10,7 +10,7 @@ exports.viewLog = function(video_entry, req, callback){
 
   var entry = video_entry+"_"+ip;
 
-  if (req.session && req.session.entry === entry)
+  if (req.session.entry === entry)
     return callback(null, 0);
 
   req.session.entry = entry;
